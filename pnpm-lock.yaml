@@ -15,12 +15,15 @@ catalogs:
     '@vitejs/plugin-vue':
       specifier: ^6.0.7
       version: 6.0.7
+    bumpp:
+      specifier: ^11.1.0
+      version: 11.1.0
     modern-monaco:
       specifier: ^0.4.1
       version: 0.4.1
     typescript:
       specifier: ^5
-      version: 5.0.2
+      version: 5.9.3
     unocss:
       specifier: ^66.7.0
       version: 66.7.0
@@ -51,6 +54,9 @@ importers:
 
   .:
     devDependencies:
+      bumpp:
+        specifier: 'catalog:'
+        version: 11.1.0
       vite-plus:
         specifier: 'catalog:'
         version: 0.1.22(@types/node@25.9.1)(jiti@2.7.0)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
@@ -102,10 +108,10 @@ importers:
         version: 24.12.4
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
   packages/lexer:
     dependencies:
@@ -118,10 +124,10 @@ importers:
         version: 24.12.4
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
   packages/parser:
     dependencies:
@@ -140,10 +146,10 @@ importers:
         version: link:../textmate
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
   packages/semantic:
     dependencies:
@@ -159,10 +165,10 @@ importers:
         version: link:../parser
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
   packages/textmate:
     devDependencies:
@@ -171,10 +177,10 @@ importers:
         version: 24.12.4
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
   packages/utils:
     devDependencies:
@@ -217,10 +223,10 @@ importers:
         version: 24.12.4
       typescript:
         specifier: 'catalog:'
-        version: 5.0.2
+        version: 5.9.3
       vite-plus:
         specifier: 'catalog:'
-        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
 packages:
 
@@ -1564,9 +1570,9 @@ packages:
   type-level-regexp@0.1.17:
     resolution: {integrity: sha512-wTk4DH3cxwk196uGLK/E9pE45aLfeKJacKmcEgEOA/q5dnPGNxXt0cfYdFxb57L+sEpf1oJH4Dnx/pnRcku9jg==}
 
-  typescript@5.0.2:
-    resolution: {integrity: sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==}
-    engines: {node: '>=12.20'}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
     hasBin: true
 
   typescript@6.0.3:
@@ -2299,7 +2305,7 @@ snapshots:
       vite: '@voidzero-dev/vite-plus-core@0.1.22(@types/node@25.9.1)(jiti@2.7.0)(typescript@6.0.3)(yaml@2.9.0)'
       vue: 3.5.34(typescript@6.0.3)
 
-  '@voidzero-dev/vite-plus-core@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(yaml@2.9.0)':
+  '@voidzero-dev/vite-plus-core@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
       '@oxc-project/runtime': 0.129.0
       '@oxc-project/types': 0.129.0
@@ -2309,7 +2315,7 @@ snapshots:
       '@types/node': 24.12.4
       fsevents: 2.3.3
       jiti: 2.7.0
-      typescript: 5.0.2
+      typescript: 5.9.3
       yaml: 2.9.0
 
   '@voidzero-dev/vite-plus-core@0.1.22(@types/node@25.9.1)(jiti@2.7.0)(typescript@6.0.3)(yaml@2.9.0)':
@@ -2343,11 +2349,11 @@ snapshots:
   '@voidzero-dev/vite-plus-linux-x64-musl@0.1.22':
     optional: true
 
-  '@voidzero-dev/vite-plus-test@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)':
+  '@voidzero-dev/vite-plus-test@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@types/chai': 5.2.3
-      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(yaml@2.9.0)
+      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.0)
       es-module-lexer: 1.7.0
       obug: 2.1.1
       pixelmatch: 7.2.0
@@ -2951,7 +2957,7 @@ snapshots:
 
   type-level-regexp@0.1.17: {}
 
-  typescript@5.0.2: {}
+  typescript@5.9.3: {}
 
   typescript@6.0.3: {}
 
@@ -3078,12 +3084,12 @@ snapshots:
       picomatch: 4.0.4
       webpack-virtual-modules: 0.6.2
 
-  vite-plus@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0):
+  vite-plus@0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0):
     dependencies:
       '@oxc-project/types': 0.129.0
       '@oxlint/plugins': 1.61.0
-      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(yaml@2.9.0)
-      '@voidzero-dev/vite-plus-test': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.0.2)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.0)
+      '@voidzero-dev/vite-plus-test': 0.1.22(@types/node@24.12.4)(jiti@2.7.0)(typescript@5.9.3)(vite@8.0.14(@types/node@24.12.4)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
       oxfmt: 0.48.0
       oxlint: 1.63.0(oxlint-tsgolint@0.22.1)
       oxlint-tsgolint: 0.22.1

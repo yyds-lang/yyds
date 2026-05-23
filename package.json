@@ -6,9 +6,11 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
     "dev": "vp run website#dev",
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "release": "bumpp -r"
   },
   "devDependencies": {
+    "bumpp": "catalog:",
     "vite-plus": "catalog:"
   },
   "engines": {

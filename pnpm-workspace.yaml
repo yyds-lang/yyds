@@ -21,6 +21,7 @@ catalog:
   unocss: ^66.7.0
   "@unocss/vite": ^66.7.0
   "@unocss/reset": ^66.7.0
+  bumpp: ^11.1.0
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
