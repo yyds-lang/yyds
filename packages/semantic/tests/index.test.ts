@@ -120,6 +120,10 @@ play intro
   );
   expect(result.definitions.some((item) => item.id === "macro:C")).toBe(true);
   expect(result.references.some((item) => item.id === "macro:C")).toBe(true);
+  const macroDef = result.definitions.find((item) => item.id === "macro:C");
+  const macroRef = result.references.find((item) => item.id === "macro:C");
+  expect(macroDef?.range.start.column).toBe(1);
+  expect(macroRef?.range.start.column).toBe(7);
   expect(result.diagnostics.some((item) => item.code === "YYDS_SEM_UNKNOWN_CHORD_ALIAS")).toBe(
     true,
   );

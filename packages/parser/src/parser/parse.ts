@@ -124,7 +124,9 @@ class Parser {
     const aliasName =
       nameToken && nameToken.type === "ident" ? this.advance()!.value : "anonymous_alias";
     const aliasNameRange =
-      nameToken && nameToken.type === "ident" ? nameToken.range : percentToken.range;
+      nameToken && nameToken.type === "ident"
+        ? mergeRange(percentToken.range.start, nameToken.range.end)
+        : percentToken.range;
 
     if (isToken(this.peek(), "symbol", "=")) {
       this.advance();
@@ -274,16 +276,17 @@ class Parser {
         isToken(this.peek(1), "symbol", "%") &&
         this.peek(2)?.type === "ident"
       ) {
-        this.advance();
+        const openToken = this.advance()!;
         this.advance();
         const aliasToken = this.advance()!;
         events.push("[", "%", aliasToken.value);
+        const closeToken = isToken(this.peek(), "symbol", "]") ? this.advance()! : aliasToken;
         chordRefs.push({
           name: aliasToken.value,
-          range: aliasToken.range,
+          range: mergeRange(openToken.range.start, closeToken.range.end),
         });
-        if (isToken(this.peek(), "symbol", "]")) {
-          events.push(this.advance()!.value);
+        if (closeToken !== aliasToken) {
+          events.push(closeToken.value);
         }
         continue;
       }

@@ -64,6 +64,7 @@ play intro
   expect(alias).toBeDefined();
   expect(alias?.name).toBe("C");
   expect(alias?.value).toBe("A2 C#3 E3 A3");
+  expect(alias?.nameRange.start.column).toBe(1);
   expect(alias?.nameRange.start.line).toBeGreaterThan(0);
 
   const section = program.body.find(
@@ -72,5 +73,6 @@ play intro
   expect(section?.nameRange).toBeDefined();
   const bar = section?.tracks[0]?.bars[0];
   expect(bar?.chordRefs[0]?.name).toBe("C");
+  expect(bar?.chordRefs[0]?.range.start.column).toBe(7);
   expect(bar?.chordRefs[0]?.range.start.line).toBeGreaterThan(0);
 });
