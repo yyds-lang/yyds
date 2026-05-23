@@ -3,7 +3,7 @@ import Vue from "@vitejs/plugin-vue";
 import UnoCSS from "unocss/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import VueRouter from "unplugin-vue-router/vite";
+import VueRouter from "vue-router/vite";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({

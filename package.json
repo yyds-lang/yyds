@@ -10,6 +10,7 @@
     "release": "bumpp -r"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "bumpp": "catalog:",
     "vite-plus": "catalog:"
   },

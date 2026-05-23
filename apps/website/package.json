@@ -17,11 +17,10 @@
   "devDependencies": {
     "@unocss/reset": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
-    "typescript": "~6.0.2",
+    "typescript": "catalog:",
     "unocss": "catalog:",
     "unplugin-auto-import": "catalog:",
     "unplugin-vue-components": "catalog:",
-    "unplugin-vue-router": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   }
