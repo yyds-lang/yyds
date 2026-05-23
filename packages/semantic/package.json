@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/semantic",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "YYDS semantic analysis package.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
