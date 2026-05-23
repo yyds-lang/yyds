@@ -1,13 +1,15 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "paths": {
+      "vite-plus": ["./node_modules/vite-plus"]
+    },
     "target": "esnext",
     "lib": ["es2023"],
     "moduleDetection": "force",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
-    "types": ["node"],
     "strict": true,
     "noUnusedLocals": true,
     "noEmit": true,

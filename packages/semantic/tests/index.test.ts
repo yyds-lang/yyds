@@ -20,6 +20,10 @@ test("analyze reports duplicate sections", () => {
       {
         type: "Section",
         name: "intro",
+        nameRange: {
+          start: { line: 1, column: 9, offset: 8 },
+          end: { line: 1, column: 14, offset: 13 },
+        },
         tracks: [],
         range: {
           start: { line: 1, column: 1, offset: 0 },
@@ -29,6 +33,10 @@ test("analyze reports duplicate sections", () => {
       {
         type: "Section",
         name: "intro",
+        nameRange: {
+          start: { line: 2, column: 9, offset: 22 },
+          end: { line: 2, column: 14, offset: 27 },
+        },
         tracks: [],
         range: {
           start: { line: 2, column: 1, offset: 14 },
@@ -54,6 +62,10 @@ test("analyze reports unknown track reference target", () => {
       {
         type: "Section",
         name: "verse",
+        nameRange: {
+          start: { line: 1, column: 9, offset: 8 },
+          end: { line: 1, column: 14, offset: 13 },
+        },
         range: {
           start: { line: 1, column: 1, offset: 0 },
           end: { line: 3, column: 1, offset: 30 },
@@ -62,6 +74,10 @@ test("analyze reports unknown track reference target", () => {
           {
             type: "Track",
             name: "lead",
+            nameRange: {
+              start: { line: 2, column: 9, offset: 16 },
+              end: { line: 2, column: 13, offset: 20 },
+            },
             bars: [],
             ref: { section: "intro", track: "lead" },
             range: {
@@ -88,4 +104,23 @@ test("analyze edge fixture cyclic refs", () => {
   const code = readFileSync(fixture("edge", "cyclic-track-ref.yyds"), "utf8");
   const result = analyze(parse(code));
   expect(result.diagnostics.some((item) => item.code === "YYDS_SEM_CYCLIC_REF")).toBe(true);
+});
+
+test("analyze chord aliases and references", () => {
+  const result = analyze(
+    parse(`
+%C = [A2 C#3 E3 A3]
+section intro {
+  track lead {
+    | [%C] C4 / q [%X] |
+  }
+}
+play intro
+`),
+  );
+  expect(result.definitions.some((item) => item.id === "macro:C")).toBe(true);
+  expect(result.references.some((item) => item.id === "macro:C")).toBe(true);
+  expect(result.diagnostics.some((item) => item.code === "YYDS_SEM_UNKNOWN_CHORD_ALIAS")).toBe(
+    true,
+  );
 });

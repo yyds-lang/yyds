@@ -1,9 +1,29 @@
-import type { Diagnostic, ProgramNode, SectionNode, TrackNode } from "@yyds-lang/ast/types";
+import type { Diagnostic, ProgramNode, Range, SectionNode, TrackNode } from "@yyds-lang/ast/types";
 import { YYDS_DIAGNOSTIC_CODES, YYDS_DIAGNOSTIC_SEVERITY } from "@yyds-lang/ast";
+
+export type SymbolKind = "macro" | "section" | "track";
+
+export interface SymbolDefinition {
+  id: string;
+  kind: SymbolKind;
+  name: string;
+  range: Range;
+  detail?: string;
+  container?: string;
+}
+
+export interface SymbolReference {
+  id: string;
+  kind: SymbolKind;
+  name: string;
+  range: Range;
+}
 
 export interface SemanticModel {
   sections: string[];
   diagnostics: Diagnostic[];
+  definitions: SymbolDefinition[];
+  references: SymbolReference[];
 }
 
 interface TrackRefItem {
@@ -33,13 +53,54 @@ function pushDiagnostic(
 
 export function analyze(program: ProgramNode): SemanticModel {
   const sectionSet = new Set<string>();
+  const macroSet = new Set<string>();
   const diagnostics: Diagnostic[] = [];
   const sectionList: SectionNode[] = [];
+  const definitions: SymbolDefinition[] = [];
+  const references: SymbolReference[] = [];
   const refs: TrackRefItem[] = [];
+
+  const pushDefinition = (definition: SymbolDefinition): void => {
+    definitions.push(definition);
+  };
+
+  const pushReference = (reference: SymbolReference): void => {
+    references.push(reference);
+  };
+
+  for (const node of program.body) {
+    if (node.type === "ChordAlias") {
+      const symbolId = `macro:${node.name}`;
+      if (macroSet.has(node.name)) {
+        diagnostics.push({
+          code: YYDS_DIAGNOSTIC_CODES.SEM_DUPLICATE_CHORD_ALIAS,
+          severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
+          message: `Duplicate chord alias "${node.name}".`,
+          range: node.nameRange,
+        });
+      } else {
+        macroSet.add(node.name);
+      }
+      pushDefinition({
+        id: symbolId,
+        kind: "macro",
+        name: node.name,
+        range: node.nameRange,
+        detail: `[${node.value}]`,
+      });
+    }
+  }
 
   for (const node of program.body) {
     if (node.type === "Section") {
       sectionList.push(node);
+      const sectionSymbolId = `section:${node.name}`;
+      pushDefinition({
+        id: sectionSymbolId,
+        kind: "section",
+        name: node.name,
+        range: node.nameRange,
+      });
       if (sectionSet.has(node.name)) {
         diagnostics.push({
           code: YYDS_DIAGNOSTIC_CODES.SEM_DUPLICATE_SECTION,
@@ -51,7 +112,53 @@ export function analyze(program: ProgramNode): SemanticModel {
         sectionSet.add(node.name);
       }
       for (const track of node.tracks) {
+        pushDefinition({
+          id: `track:${node.name}:${track.name}`,
+          kind: "track",
+          name: track.name,
+          range: track.nameRange,
+          container: node.name,
+        });
+
+        for (const bar of track.bars) {
+          for (const chordRef of bar.chordRefs) {
+            const symbolId = `macro:${chordRef.name}`;
+            pushReference({
+              id: symbolId,
+              kind: "macro",
+              name: chordRef.name,
+              range: chordRef.range,
+            });
+            if (!macroSet.has(chordRef.name)) {
+              diagnostics.push({
+                code: YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_CHORD_ALIAS,
+                severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
+                message: `Unknown chord alias "${chordRef.name}".`,
+                range: chordRef.range,
+              });
+            }
+          }
+        }
+
         if (track.ref) {
+          const sectionSymbolId = `section:${track.ref.section}`;
+          const trackSymbolId = `track:${track.ref.section}:${track.ref.track}`;
+          if (track.ref.sectionRange) {
+            pushReference({
+              id: sectionSymbolId,
+              kind: "section",
+              name: track.ref.section,
+              range: track.ref.sectionRange,
+            });
+          }
+          if (track.ref.trackRange) {
+            pushReference({
+              id: trackSymbolId,
+              kind: "track",
+              name: track.ref.track,
+              range: track.ref.trackRange,
+            });
+          }
           refs.push({
             owner: track,
             ownerSection: node,
@@ -60,6 +167,13 @@ export function analyze(program: ProgramNode): SemanticModel {
           });
         }
       }
+    } else if (node.type === "Play") {
+      pushReference({
+        id: `section:${node.section}`,
+        kind: "section",
+        name: node.section,
+        range: node.sectionRange,
+      });
     }
   }
 
@@ -147,5 +261,7 @@ export function analyze(program: ProgramNode): SemanticModel {
   return {
     sections: [...sectionSet],
     diagnostics,
+    definitions,
+    references,
   };
 }

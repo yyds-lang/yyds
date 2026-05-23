@@ -113,6 +113,28 @@ importers:
         specifier: 'catalog:'
         version: 0.1.22(@types/node@25.9.1)(jiti@2.7.0)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
 
+  packages/language-service:
+    dependencies:
+      '@yyds-lang/ast':
+        specifier: workspace:*
+        version: link:../ast
+      '@yyds-lang/parser':
+        specifier: workspace:*
+        version: link:../parser
+      '@yyds-lang/semantic':
+        specifier: workspace:*
+        version: link:../semantic
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.1
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite-plus:
+        specifier: 'catalog:'
+        version: 0.1.22(@types/node@25.9.1)(jiti@2.7.0)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(yaml@2.9.0))(yaml@2.9.0)
+
   packages/lexer:
     dependencies:
       '@yyds-lang/ast':
@@ -205,6 +227,9 @@ importers:
       '@yyds-lang/ast':
         specifier: workspace:*
         version: link:../ast
+      '@yyds-lang/language-service':
+        specifier: workspace:*
+        version: link:../language-service
       '@yyds-lang/lexer':
         specifier: workspace:*
         version: link:../lexer

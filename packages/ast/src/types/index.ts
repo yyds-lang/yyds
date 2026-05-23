@@ -3,6 +3,8 @@ import type * as DiagnosticCode from "../diagnostic/codes.ts";
 
 export type AstNode = Ast.AstNode;
 export type BarNode = Ast.BarNode;
+export type ChordAliasNode = Ast.ChordAliasNode;
+export type ChordAliasRefNode = Ast.ChordAliasRefNode;
 export type Diagnostic = Ast.Diagnostic;
 export type DiagnosticSeverity = Ast.DiagnosticSeverity;
 export type HeaderNode = Ast.HeaderNode;

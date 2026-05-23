@@ -43,4 +43,34 @@ play verse
   expect(verse).toBeDefined();
   expect(verse?.tracks[0]?.ref?.section).toBe("intro");
   expect(verse?.tracks[0]?.ref?.track).toBe("low");
+  expect(verse?.tracks[0]?.ref?.sectionRange).toBeDefined();
+  expect(verse?.tracks[0]?.ref?.trackRange).toBeDefined();
+});
+
+test("parse chord alias declarations and references", () => {
+  const program = parse(`
+%C = [A2 C#3 E3 A3]
+section intro {
+  track lead {
+    | [%C] C4 / q |
+  }
+}
+play intro
+`);
+
+  const alias = program.body.find(
+    (node): node is Extract<StatementNode, { type: "ChordAlias" }> => node.type === "ChordAlias",
+  );
+  expect(alias).toBeDefined();
+  expect(alias?.name).toBe("C");
+  expect(alias?.value).toBe("A2 C#3 E3 A3");
+  expect(alias?.nameRange.start.line).toBeGreaterThan(0);
+
+  const section = program.body.find(
+    (node): node is Extract<StatementNode, { type: "Section" }> => node.type === "Section",
+  );
+  expect(section?.nameRange).toBeDefined();
+  const bar = section?.tracks[0]?.bars[0];
+  expect(bar?.chordRefs[0]?.name).toBe("C");
+  expect(bar?.chordRefs[0]?.range.start.line).toBeGreaterThan(0);
 });

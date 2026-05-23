@@ -11,6 +11,18 @@ export {
 export { analyze } from "@yyds-lang/semantic";
 export type { SemanticModel } from "@yyds-lang/semantic";
 export {
+  analyzeDocument,
+  getDefinition,
+  getHover,
+  getRenameEdits,
+} from "@yyds-lang/language-service";
+export type {
+  HoverResult,
+  RenameEdit,
+  TextPosition,
+  YydsDocumentAnalysis,
+} from "@yyds-lang/language-service/types";
+export {
   toShikiLanguageDefinition,
   YYDS_KEYWORDS,
   YYDS_SCOPE_NAME,

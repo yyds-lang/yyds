@@ -2,9 +2,7 @@ import { mergeConfig, type UserConfig } from "vite-plus";
 
 const commonConfig: UserConfig = {
   pack: {
-    dts: {
-      tsgo: true,
-    },
+    dts: true,
     exports: true,
   },
   lint: {

@@ -1,7 +1,7 @@
 {
-  "name": "yyds-lang",
+  "name": "@yyds-lang/language-service",
   "version": "0.0.4",
-  "description": "Aggregated exports for YYDS core packages.",
+  "description": "YYDS language service helpers for IDE features.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
     "url": "https://github.com/yyds-lang/yyds/issues"
@@ -32,11 +32,8 @@
   },
   "dependencies": {
     "@yyds-lang/ast": "workspace:*",
-    "@yyds-lang/language-service": "workspace:*",
-    "@yyds-lang/lexer": "workspace:*",
     "@yyds-lang/parser": "workspace:*",
-    "@yyds-lang/semantic": "workspace:*",
-    "@yyds-lang/textmate": "workspace:*"
+    "@yyds-lang/semantic": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

@@ -1,5 +1,6 @@
 import type {
   BarNode,
+  ChordAliasNode,
   HeaderNode,
   PlayNode,
   ProgramNode,
@@ -41,6 +42,7 @@ function toSectionNode(name: string, token: Token): SectionNode {
   return {
     type: "Section",
     name,
+    nameRange: token.range,
     tracks: [],
     range: token.range,
   };
@@ -57,10 +59,12 @@ function mergeRange(start: Range["start"], end: Range["end"]): Range {
 class Parser {
   private readonly headerKeys: ReadonlySet<string> = new Set(PARSER_HEADER_KEYWORDS);
   private readonly tokens: Token[];
+  private readonly source: string;
   private pos = 0;
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: Token[], source = "") {
     this.tokens = tokens;
+    this.source = source;
   }
 
   parse(): ProgramNode {
@@ -72,6 +76,10 @@ class Parser {
       }
       if (token.type === "ident" && this.headerKeys.has(token.value)) {
         body.push(this.parseHeader());
+        continue;
+      }
+      if (isToken(token, "symbol", "%")) {
+        body.push(this.parseChordAlias());
         continue;
       }
       if (isToken(token, "ident", "section")) {
@@ -110,11 +118,52 @@ class Parser {
     return toHeaderNode(key, value, keyToken);
   }
 
+  private parseChordAlias(): ChordAliasNode {
+    const percentToken = this.advance()!;
+    const nameToken = this.peek();
+    const aliasName =
+      nameToken && nameToken.type === "ident" ? this.advance()!.value : "anonymous_alias";
+    const aliasNameRange =
+      nameToken && nameToken.type === "ident" ? nameToken.range : percentToken.range;
+
+    if (isToken(this.peek(), "symbol", "=")) {
+      this.advance();
+    }
+
+    let value = "";
+    const notes: string[] = [];
+    if (isToken(this.peek(), "symbol", "[")) {
+      const openToken = this.advance()!;
+      const valueStartOffset = openToken.range.end.offset;
+      while (!this.isEOF() && !isToken(this.peek(), "symbol", "]")) {
+        notes.push(this.advance()!.value);
+      }
+      const closeToken = isToken(this.peek(), "symbol", "]") ? this.advance()! : openToken;
+      if (this.source.length > 0) {
+        value = this.source.slice(valueStartOffset, closeToken.range.start.offset).trim();
+      } else {
+        value = notes.join(" ").trim();
+      }
+    }
+
+    const end = this.tokens[Math.max(this.pos - 1, 0)]?.range.end ?? percentToken.range.end;
+    return {
+      type: "ChordAlias",
+      name: aliasName,
+      nameRange: aliasNameRange,
+      value,
+      notes,
+      range: mergeRange(percentToken.range.start, end),
+    };
+  }
+
   private parseSection(): SectionNode {
     const sectionToken = this.advance()!;
     const nameToken = this.peek();
-    const sectionName = nameToken?.type === "ident" ? this.advance()!.value : "anonymous";
+    const sectionNameToken = nameToken?.type === "ident" ? this.advance()! : undefined;
+    const sectionName = sectionNameToken?.value ?? "anonymous";
     const section = toSectionNode(sectionName, sectionToken);
+    section.nameRange = sectionNameToken?.range ?? sectionToken.range;
 
     while (!this.isEOF() && !isToken(this.peek(), "symbol", "{")) {
       this.advance();
@@ -152,7 +201,8 @@ class Parser {
       }
     }
 
-    const name = this.peek()?.type === "ident" ? this.advance()!.value : "track";
+    const trackNameToken = this.peek()?.type === "ident" ? this.advance()! : undefined;
+    const name = trackNameToken?.value ?? "track";
     const bars: BarNode[] = [];
     let ref: TrackNode["ref"];
 
@@ -166,7 +216,8 @@ class Parser {
 
     if (isToken(this.peek(), "ident", "refer")) {
       this.advance();
-      const refSection = this.peek()?.type === "ident" ? this.advance()!.value : "";
+      const refSectionToken = this.peek()?.type === "ident" ? this.advance()! : undefined;
+      const refSection = refSectionToken?.value ?? "";
       if (isToken(this.peek(), "symbol", "->")) {
         this.advance();
       } else if (isToken(this.peek(), "symbol", "-")) {
@@ -175,8 +226,14 @@ class Parser {
           this.advance();
         }
       }
-      const refTrack = this.peek()?.type === "ident" ? this.advance()!.value : "";
-      ref = { section: refSection, track: refTrack };
+      const refTrackToken = this.peek()?.type === "ident" ? this.advance()! : undefined;
+      const refTrack = refTrackToken?.value ?? "";
+      ref = {
+        section: refSection,
+        track: refTrack,
+        sectionRange: refSectionToken?.range,
+        trackRange: refTrackToken?.range,
+      };
     } else if (isToken(this.peek(), "symbol", "{")) {
       this.advance();
       while (!this.isEOF() && !isToken(this.peek(), "symbol", "}")) {
@@ -195,6 +252,7 @@ class Parser {
     return {
       type: "Track",
       name,
+      nameRange: trackNameToken?.range ?? trackToken.range,
       instrument,
       ref,
       bars,
@@ -205,28 +263,50 @@ class Parser {
   private parseBar(): BarNode {
     const start = this.advance()!;
     const events: string[] = [];
+    const chordRefs: BarNode["chordRefs"] = [];
     while (
       !this.isEOF() &&
       !isToken(this.peek(), "symbol", "|") &&
       !isToken(this.peek(), "symbol", "}")
     ) {
+      if (
+        isToken(this.peek(), "symbol", "[") &&
+        isToken(this.peek(1), "symbol", "%") &&
+        this.peek(2)?.type === "ident"
+      ) {
+        this.advance();
+        this.advance();
+        const aliasToken = this.advance()!;
+        events.push("[", "%", aliasToken.value);
+        chordRefs.push({
+          name: aliasToken.value,
+          range: aliasToken.range,
+        });
+        if (isToken(this.peek(), "symbol", "]")) {
+          events.push(this.advance()!.value);
+        }
+        continue;
+      }
       events.push(this.advance()!.value);
     }
     const endToken = isToken(this.peek(), "symbol", "|") ? this.advance()! : start;
     return {
       type: "Bar",
       events,
+      chordRefs,
       range: mergeRange(start.range.start, endToken.range.end),
     };
   }
 
   private parsePlay(): PlayNode {
     const playToken = this.advance()!;
-    const section = this.peek()?.type === "ident" ? this.advance()!.value : "";
+    const sectionToken = this.peek()?.type === "ident" ? this.advance()! : undefined;
+    const section = sectionToken?.value ?? "";
     const end = this.tokens[Math.max(this.pos - 1, 0)]?.range.end ?? playToken.range.end;
     return {
       type: "Play",
       section,
+      sectionRange: sectionToken?.range ?? playToken.range,
       range: mergeRange(playToken.range.start, end),
     };
   }
@@ -244,8 +324,8 @@ class Parser {
     return isToken(this.peek(), "eof");
   }
 
-  private peek(): Token | undefined {
-    return this.tokens[this.pos];
+  private peek(offset = 0): Token | undefined {
+    return this.tokens[this.pos + offset];
   }
 
   private advance(): Token | undefined {
@@ -255,10 +335,11 @@ class Parser {
   }
 }
 
-export function parseTokens(tokens: Token[]): ProgramNode {
-  return new Parser(tokens).parse();
+export function parseTokens(tokens: Token[], source = ""): ProgramNode {
+  return new Parser(tokens, source).parse();
 }
 
 export function parse(code: string): ProgramNode {
-  return parseTokens(tokenize(code));
+  const tokens = tokenize(code);
+  return parseTokens(tokens, code);
 }
