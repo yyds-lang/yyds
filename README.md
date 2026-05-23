@@ -10,6 +10,10 @@ A starter for creating a Vite+ monorepo.
 - Diagnostic standard: `docs/diagnostic-standard.md`
 - Shared fixtures: `fixtures/valid`, `fixtures/invalid`, `fixtures/edge`
 
+## Upstream Reference
+
+- Original YYDS Go project: [plugine/yyds](https://github.com/plugine/yyds)
+
 ## Development
 
 - Check everything is ready:
