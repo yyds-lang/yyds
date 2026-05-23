@@ -1,0 +1,34 @@
+{
+  "name": "@yyds-lang/semantic",
+  "version": "0.0.0",
+  "description": "YYDS semantic analysis package.",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "@yyds-lang/ast": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yyds-lang/parser": "workspace:*",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

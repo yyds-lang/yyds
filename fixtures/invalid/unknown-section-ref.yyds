@@ -1,0 +1,8 @@
+tempo 120
+meter 4/4
+
+section verse {
+  track lead refer intro -> lead
+}
+
+play verse

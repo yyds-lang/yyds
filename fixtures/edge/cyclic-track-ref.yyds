@@ -1,0 +1,12 @@
+tempo 120
+meter 4/4
+
+section a {
+  track low refer b -> low
+}
+
+section b {
+  track low refer a -> low
+}
+
+play a

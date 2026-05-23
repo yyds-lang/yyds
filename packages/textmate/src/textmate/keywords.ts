@@ -1,0 +1,26 @@
+export const YYDS_KEYWORDS = [
+  "yyds",
+  "song",
+  "tempo",
+  "velocity",
+  "meter",
+  "key",
+  "unit",
+  "octave",
+  "strict",
+  "section",
+  "track",
+  "play",
+  "repeat",
+  "after",
+  "refer",
+  "instrument",
+  "volume",
+  "pan",
+  "mute",
+  "solo",
+  "transpose",
+  "allow_unbalanced",
+] as const;
+
+export type YydsKeyword = (typeof YYDS_KEYWORDS)[number];

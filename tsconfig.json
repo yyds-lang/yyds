@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@yyds-lang/ast": ["./packages/ast/src/index.ts"],
+      "@yyds-lang/ast/types": ["./packages/ast/src/types/index.ts"],
+      "@yyds-lang/lexer": ["./packages/lexer/src/index.ts"],
+      "@yyds-lang/parser": ["./packages/parser/src/index.ts"],
+      "@yyds-lang/semantic": ["./packages/semantic/src/index.ts"],
+      "@yyds-lang/textmate": ["./packages/textmate/src/index.ts"],
+      "yyds-lang": ["./packages/yyds-lang/src/index.ts"],
+      "@yyds-lang/utils": ["./packages/utils/src/index.ts"]
+    }
+  }
+}

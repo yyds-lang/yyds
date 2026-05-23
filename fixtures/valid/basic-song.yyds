@@ -1,0 +1,13 @@
+yyds 2
+song "Basic"
+tempo 120
+meter 4/4
+unit q
+
+section intro {
+  track[piano] lead {
+    | C4 / q D4 / q E4 / q F4 / q |
+  }
+}
+
+play intro
