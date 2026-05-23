@@ -2,7 +2,15 @@
   "name": "@yyds-lang/utils",
   "version": "0.0.2",
   "description": "Shared utility helpers for yyds-lang workspace.",
+  "homepage": "https://github.com/yyds-lang/yyds#readme",
+  "bugs": {
+    "url": "https://github.com/yyds-lang/yyds/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yyds-lang/yyds"
+  },
   "files": [
     "dist"
   ],

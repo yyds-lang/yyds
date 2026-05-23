@@ -2,7 +2,15 @@
   "name": "@yyds-lang/ast",
   "version": "0.0.2",
   "description": "Core YYDS AST and diagnostics types.",
+  "homepage": "https://github.com/yyds-lang/yyds#readme",
+  "bugs": {
+    "url": "https://github.com/yyds-lang/yyds/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yyds-lang/yyds"
+  },
   "files": [
     "dist"
   ],
