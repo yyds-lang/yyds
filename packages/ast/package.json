@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/ast",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Core YYDS AST and diagnostics types.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {

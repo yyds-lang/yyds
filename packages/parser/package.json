@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/parser",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "YYDS parser package.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
