@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/utils",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Shared utility helpers for yyds-lang workspace.",
   "license": "MIT",
   "files": [

@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/ast",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Core YYDS AST and diagnostics types.",
   "license": "MIT",
   "files": [
