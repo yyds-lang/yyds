@@ -6,7 +6,7 @@ export default defineConfig({
   },
   fmt: {},
   lint: {
-    ignorePatterns: ["apps/website/public/wasm/wasm_exec.js"],
+    ignorePatterns: ["apps/website/public/wasm/wasm_exec.js", "scripts/vite/**"],
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },

@@ -6,6 +6,10 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
     "dev": "vp run website#dev",
+    "build": "vp run -r build",
+    "preview": "vp run website#preview",
+    "test": "vp run -r test",
+    "check": "vp run -r check",
     "prepare": "vp config",
     "release": "bumpp -r"
   },
