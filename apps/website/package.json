@@ -10,9 +10,12 @@
     "preview": "vp preview"
   },
   "dependencies": {
+    "@shikijs/monaco": "catalog:",
     "modern-monaco": "catalog:",
+    "shiki": "catalog:",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "yyds-lang-shiki": "catalog:"
   },
   "devDependencies": {
     "@unocss/reset": "catalog:",

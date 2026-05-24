@@ -7,6 +7,10 @@ import VueRouter from 'vue-router/vite'
 import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  // Pre-bundle the core entry used by editor runtime bootstrapping.
+  optimizeDeps: {
+    include: ['modern-monaco/core']
+  },
   plugins: [
     VueRouter({
       routesFolder: 'src/pages',
@@ -25,6 +29,8 @@ export default defineConfig({
     UnoCSS()
   ],
   resolve: {
+    // Force a single modern-monaco runtime instance across all subpath imports.
+    dedupe: ['modern-monaco'],
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }

@@ -1,4 +1,4 @@
-import { init } from 'modern-monaco'
+import { ensureShikiRuntime } from './shikiRuntime'
 
 const DEFAULT_SOURCE = `yyds 2
 song "Demo"
@@ -16,79 +16,6 @@ section main {
 
 play main`
 
-let monacoInstancePromise: ReturnType<typeof init> | null = null
-let yydsRegistered = false
-
-async function getMonaco() {
-  if (!monacoInstancePromise) {
-    monacoInstancePromise = init({
-      defaultTheme: 'vitesse-dark'
-    })
-  }
-  return monacoInstancePromise
-}
-
-function registerYyds(monaco: Awaited<ReturnType<typeof init>>): void {
-  if (yydsRegistered) {
-    return
-  }
-  yydsRegistered = true
-  monaco.languages.register({ id: 'yyds' })
-  monaco.languages.setMonarchTokensProvider('yyds', {
-    keywords: [
-      'yyds',
-      'song',
-      'tempo',
-      'meter',
-      'key',
-      'unit',
-      'velocity',
-      'section',
-      'track',
-      'play',
-      'refer',
-      'repeat',
-      'after'
-    ],
-    tokenizer: {
-      root: [
-        [/\/\/.*$/, 'comment'],
-        [/".*?"/, 'string'],
-        [/\b(?:[A-G](?:#|b)?\d|R)\b/, 'number'],
-        [/\b\d+(?:\.\d+)?\b/, 'number.float'],
-        [/\||@|%|=|->|-|\/(?:w|h|q|e|s|\d+)\.?/, 'operator'],
-        [/[{}[\]()]/, 'delimiter.bracket'],
-        [
-          /\b[a-zA-Z_][\w-]*\b/,
-          {
-            cases: {
-              '@keywords': 'keyword',
-              '@default': 'identifier'
-            }
-          }
-        ]
-      ]
-    }
-  })
-  monaco.languages.setLanguageConfiguration('yyds', {
-    comments: {
-      lineComment: '//',
-      blockComment: ['/*', '*/']
-    },
-    brackets: [
-      ['{', '}'],
-      ['[', ']'],
-      ['(', ')']
-    ],
-    autoClosingPairs: [
-      { open: '{', close: '}' },
-      { open: '[', close: ']' },
-      { open: '(', close: ')' },
-      { open: '"', close: '"' }
-    ]
-  })
-}
-
 export async function createYydsEditor(
   el: HTMLElement,
   onChange: (source: string) => void,
@@ -98,8 +25,8 @@ export async function createYydsEditor(
   setValue: (next: string) => void
   dispose: () => void
 }> {
-  const monaco = await getMonaco()
-  registerYyds(monaco)
+  const runtime = await ensureShikiRuntime()
+  const monaco = runtime.monaco
   const model = monaco.editor.createModel(source, 'yyds')
   const editor = monaco.editor.create(el, {
     model,
