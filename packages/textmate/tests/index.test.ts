@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { expect, test } from 'vite-plus/test'
+import * as textmateExports from '../src/index.ts'
 import {
   YYDS_KEYWORDS,
   YYDS_SCOPE_NAME,
@@ -82,4 +83,9 @@ test('comment grammar aligns with language configuration', () => {
   expect(blockCommentBegin).toContain('/\\*')
   expect(blockCommentEnd).toContain('\\*/')
   expect(yydsLanguageConfiguration.comments.blockComment).toEqual(['/*', '*/'])
+})
+
+test('textmate exports remain tool-agnostic', () => {
+  expect('toShikiLanguageDefinition' in textmateExports).toBe(false)
+  expect('ShikiLanguageDefinition' in textmateExports).toBe(false)
 })
