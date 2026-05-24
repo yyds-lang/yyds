@@ -5,7 +5,7 @@ const keywordPattern = `\\b(${YYDS_KEYWORDS.join('|')})\\b`
 
 export const yydsGrammar = {
   scopeName: YYDS_SCOPE_NAME,
-  name: 'YYDS',
+  name: 'yyds',
   patterns: [
     { include: '#comments' },
     { include: '#keywords' },
