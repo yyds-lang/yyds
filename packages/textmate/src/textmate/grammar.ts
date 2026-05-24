@@ -17,7 +17,14 @@ export const yydsGrammar = {
   ],
   repository: {
     comments: {
-      patterns: [{ name: 'comment.line.double-slash.yyds', match: '//.*$' }]
+      patterns: [
+        { name: 'comment.line.double-slash.yyds', match: '//.*$' },
+        {
+          name: 'comment.block.yyds',
+          begin: '/\\*',
+          end: '\\*/'
+        }
+      ]
     },
     keywords: {
       patterns: [

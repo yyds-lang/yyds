@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { expect, test } from 'vite-plus/test'
 import {
-  toShikiLanguageDefinition,
   YYDS_KEYWORDS,
   YYDS_SCOPE_NAME,
   yydsGrammar,
@@ -28,7 +27,15 @@ test('textmate grammar keyword source is centralized', () => {
 test('highlight regression: key tokens are covered', () => {
   const stringPattern = new RegExp(yydsGrammar.repository.strings.patterns[0]?.begin ?? '"')
   const numberPattern = new RegExp(yydsGrammar.repository.numbers.patterns[0]?.match ?? '\\d+')
-  const commentPattern = new RegExp(yydsGrammar.repository.comments.patterns[0]?.match ?? '//.*$')
+  const lineCommentPattern = new RegExp(
+    yydsGrammar.repository.comments.patterns[0]?.match ?? '//.*$'
+  )
+  const blockCommentBeginPattern = new RegExp(
+    yydsGrammar.repository.comments.patterns[1]?.begin ?? '/\\*'
+  )
+  const blockCommentEndPattern = new RegExp(
+    yydsGrammar.repository.comments.patterns[1]?.end ?? '\\*/'
+  )
   const notePattern = new RegExp(
     yydsGrammar.repository.notes.patterns[0]?.match ?? '\\b[A-G]\\d\\b'
   )
@@ -37,7 +44,9 @@ test('highlight regression: key tokens are covered', () => {
 
   expect(stringPattern.test('"demo"')).toBe(true)
   expect(numberPattern.test('120')).toBe(true)
-  expect(commentPattern.test('// note')).toBe(true)
+  expect(lineCommentPattern.test('// note')).toBe(true)
+  expect(blockCommentBeginPattern.test('/* note */')).toBe(true)
+  expect(blockCommentEndPattern.test('/* note */')).toBe(true)
   expect(notePattern.test('C#4')).toBe(true)
   expect(durationPattern.test('/q')).toBe(true)
   expect(operatorPattern.test('->')).toBe(true)
@@ -65,8 +74,12 @@ test('language configuration model has stable pairs', () => {
   )
 })
 
-test('shiki alignment uses same grammar source', () => {
-  const definition = toShikiLanguageDefinition('yyds')
-  expect(definition.scopeName).toBe('source.yyds')
-  expect(definition.grammar).toBe(yydsGrammar)
+test('comment grammar aligns with language configuration', () => {
+  const lineCommentPattern = yydsGrammar.repository.comments.patterns[0]?.match ?? ''
+  const blockCommentBegin = yydsGrammar.repository.comments.patterns[1]?.begin ?? ''
+  const blockCommentEnd = yydsGrammar.repository.comments.patterns[1]?.end ?? ''
+  expect(lineCommentPattern).toContain('//')
+  expect(blockCommentBegin).toContain('/\\*')
+  expect(blockCommentEnd).toContain('\\*/')
+  expect(yydsLanguageConfiguration.comments.blockComment).toEqual(['/*', '*/'])
 })

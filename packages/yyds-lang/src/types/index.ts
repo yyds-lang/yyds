@@ -6,8 +6,4 @@ export type {
   TextPosition,
   YydsDocumentAnalysis
 } from '@yyds-lang/language-service/types'
-export type {
-  ShikiLanguageDefinition,
-  YydsKeyword,
-  YydsLanguageConfiguration
-} from '@yyds-lang/textmate'
+export type { YydsKeyword, YydsLanguageConfiguration } from '@yyds-lang/textmate'

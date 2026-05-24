@@ -23,14 +23,9 @@ export type {
   YydsDocumentAnalysis
 } from '@yyds-lang/language-service/types'
 export {
-  toShikiLanguageDefinition,
   YYDS_KEYWORDS,
   YYDS_SCOPE_NAME,
   yydsGrammar,
   yydsLanguageConfiguration
 } from '@yyds-lang/textmate'
-export type {
-  ShikiLanguageDefinition,
-  YydsKeyword,
-  YydsLanguageConfiguration
-} from '@yyds-lang/textmate'
+export type { YydsKeyword, YydsLanguageConfiguration } from '@yyds-lang/textmate'
