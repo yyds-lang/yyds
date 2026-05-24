@@ -1,6 +1,7 @@
 import type {
   BarNode,
   ChordAliasNode,
+  Diagnostic,
   HeaderNode,
   PlayNode,
   ProgramNode,
@@ -10,6 +11,7 @@ import type {
   TrackNode,
   Token,
 } from "@yyds-lang/ast/types";
+import { YYDS_DIAGNOSTIC_CODES, YYDS_DIAGNOSTIC_SEVERITY } from "@yyds-lang/ast";
 import { tokenize } from "@yyds-lang/lexer";
 
 export const PARSER_HEADER_KEYWORDS = [
@@ -60,6 +62,8 @@ class Parser {
   private readonly headerKeys: ReadonlySet<string> = new Set(PARSER_HEADER_KEYWORDS);
   private readonly tokens: Token[];
   private readonly source: string;
+  private readonly diagnostics: Diagnostic[] = [];
+  private readonly reportedOffsets = new Set<number>();
   private pos = 0;
 
   constructor(tokens: Token[], source = "") {
@@ -90,6 +94,7 @@ class Parser {
         body.push(this.parsePlay());
         continue;
       }
+      this.pushUnexpectedToken(token, "top-level statement");
       this.advance();
     }
 
@@ -168,6 +173,11 @@ class Parser {
     section.nameRange = sectionNameToken?.range ?? sectionToken.range;
 
     while (!this.isEOF() && !isToken(this.peek(), "symbol", "{")) {
+      const token = this.peek();
+      if (!token) {
+        break;
+      }
+      this.pushUnexpectedToken(token, 'section opening "{"');
       this.advance();
     }
     if (isToken(this.peek(), "symbol", "{")) {
@@ -179,6 +189,10 @@ class Parser {
       if (isToken(this.peek(), "ident", "track")) {
         tracks.push(this.parseTrack());
       } else {
+        const token = this.peek();
+        if (token) {
+          this.pushUnexpectedToken(token, 'track declaration or section closing "}"');
+        }
         this.advance();
       }
     }
@@ -213,6 +227,10 @@ class Parser {
       !isToken(this.peek(), "symbol", "{") &&
       !isToken(this.peek(), "ident", "refer")
     ) {
+      const token = this.peek();
+      if (token) {
+        this.pushUnexpectedToken(token, 'track body "{" or refer expression');
+      }
       this.advance();
     }
 
@@ -242,6 +260,10 @@ class Parser {
         if (isToken(this.peek(), "symbol", "|")) {
           bars.push(this.parseBar());
           continue;
+        }
+        const token = this.peek();
+        if (token) {
+          this.pushUnexpectedToken(token, 'bar delimiter "|" or track closing "}"');
         }
         this.advance();
       }
@@ -336,13 +358,49 @@ class Parser {
     this.pos += 1;
     return token;
   }
+
+  getDiagnostics(): Diagnostic[] {
+    return this.diagnostics;
+  }
+
+  private pushUnexpectedToken(token: Token, expected: string): void {
+    if (token.type === "eof" || this.reportedOffsets.has(token.range.start.offset)) {
+      return;
+    }
+    this.reportedOffsets.add(token.range.start.offset);
+    this.diagnostics.push({
+      code: YYDS_DIAGNOSTIC_CODES.PARSE_UNEXPECTED_TOKEN,
+      severity: YYDS_DIAGNOSTIC_SEVERITY.WARNING,
+      message: `Unexpected token "${token.value}" while parsing ${expected}.`,
+      range: token.range,
+    });
+  }
 }
 
 export function parseTokens(tokens: Token[], source = ""): ProgramNode {
-  return new Parser(tokens, source).parse();
+  return parseTokensWithDiagnostics(tokens, source).program;
+}
+
+export interface ParseResult {
+  program: ProgramNode;
+  diagnostics: Diagnostic[];
+}
+
+export function parseTokensWithDiagnostics(tokens: Token[], source = ""): ParseResult {
+  const parser = new Parser(tokens, source);
+  const program = parser.parse();
+  return {
+    program,
+    diagnostics: parser.getDiagnostics(),
+  };
 }
 
 export function parse(code: string): ProgramNode {
   const tokens = tokenize(code);
   return parseTokens(tokens, code);
+}
+
+export function parseWithDiagnostics(code: string): ParseResult {
+  const tokens = tokenize(code);
+  return parseTokensWithDiagnostics(tokens, code);
 }

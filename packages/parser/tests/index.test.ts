@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { parse } from "../src/index.ts";
+import { parse, parseWithDiagnostics } from "../src/index.ts";
 import type { StatementNode } from "@yyds-lang/ast/types";
 
 test("parse reads headers and sections", () => {
@@ -75,4 +75,19 @@ play intro
   expect(bar?.chordRefs[0]?.name).toBe("C");
   expect(bar?.chordRefs[0]?.range.start.column).toBe(7);
   expect(bar?.chordRefs[0]?.range.start.line).toBeGreaterThan(0);
+});
+
+test("parseWithDiagnostics reports skipped tokens in fallback paths", () => {
+  const { program, diagnostics } = parseWithDiagnostics(`
+tempo 120
+section verse ??? {
+  track lead ??? {
+    ??? | C4 / q |
+  }
+}
+`);
+
+  expect(program.body.some((node) => node.type === "Section")).toBe(true);
+  expect(diagnostics.length).toBeGreaterThan(0);
+  expect(diagnostics.some((item) => item.code === "YYDS_PARSE_UNEXPECTED_TOKEN")).toBe(true);
 });

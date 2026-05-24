@@ -1,6 +1,20 @@
 import type { Position, Range, Token } from "@yyds-lang/ast/types";
 
 const SYMBOLS = new Set(["{", "}", "[", "]", "|", "/", ".", "@", "%", "=", "-", ">", "+"]);
+const CHAR_NEWLINE = 10;
+const CHAR_CARRIAGE_RETURN = 13;
+const CHAR_TAB = 9;
+const CHAR_SPACE = 32;
+const CHAR_DQUOTE = 34;
+const CHAR_SLASH = 47;
+const CHAR_DOT = 46;
+const CHAR_ZERO = 48;
+const CHAR_NINE = 57;
+const CHAR_UPPER_A = 65;
+const CHAR_UPPER_Z = 90;
+const CHAR_UNDERSCORE = 95;
+const CHAR_LOWER_A = 97;
+const CHAR_LOWER_Z = 122;
 
 function createPosition(line: number, column: number, offset: number): Position {
   return { line, column, offset };
@@ -10,34 +24,48 @@ function createRange(start: Position, end: Position): Range {
   return { start, end };
 }
 
-function isAlphaNumeric(char: string): boolean {
-  return /[A-Za-z0-9_]/.test(char);
+function isDigitCode(code: number): boolean {
+  return code >= CHAR_ZERO && code <= CHAR_NINE;
+}
+
+function isIdentifierStartCode(code: number): boolean {
+  return (
+    (code >= CHAR_UPPER_A && code <= CHAR_UPPER_Z) ||
+    (code >= CHAR_LOWER_A && code <= CHAR_LOWER_Z) ||
+    code === CHAR_UNDERSCORE
+  );
+}
+
+function isIdentifierCode(code: number): boolean {
+  return isIdentifierStartCode(code) || isDigitCode(code);
 }
 
 export function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
+  const length = source.length;
   let index = 0;
   let line = 1;
   let column = 1;
 
-  while (index < source.length) {
+  while (index < length) {
     const char = source[index];
+    const code = source.charCodeAt(index);
 
-    if (char === "\n") {
+    if (code === CHAR_NEWLINE) {
       index += 1;
       line += 1;
       column = 1;
       continue;
     }
 
-    if (char === " " || char === "\t" || char === "\r") {
+    if (code === CHAR_SPACE || code === CHAR_TAB || code === CHAR_CARRIAGE_RETURN) {
       index += 1;
       column += 1;
       continue;
     }
 
-    if (char === "/" && source[index + 1] === "/") {
-      while (index < source.length && source[index] !== "\n") {
+    if (code === CHAR_SLASH && source.charCodeAt(index + 1) === CHAR_SLASH) {
+      while (index < length && source.charCodeAt(index) !== CHAR_NEWLINE) {
         index += 1;
         column += 1;
       }
@@ -46,53 +74,53 @@ export function tokenize(source: string): Token[] {
 
     const start = createPosition(line, column, index);
 
-    if (char === '"') {
-      let value = '"';
+    if (code === CHAR_DQUOTE) {
+      const valueStart = index;
       index += 1;
       column += 1;
-      while (index < source.length && source[index] !== '"') {
-        value += source[index];
+      while (index < length && source.charCodeAt(index) !== CHAR_DQUOTE) {
         index += 1;
         column += 1;
       }
-      if (source[index] === '"') {
-        value += '"';
+      if (source.charCodeAt(index) === CHAR_DQUOTE) {
         index += 1;
         column += 1;
       }
       tokens.push({
         type: "string",
-        value,
+        value: source.slice(valueStart, index),
         range: createRange(start, createPosition(line, column, index)),
       });
       continue;
     }
 
-    if (/[0-9]/.test(char)) {
-      let value = "";
-      while (index < source.length && /[0-9.]/.test(source[index])) {
-        value += source[index];
+    if (isDigitCode(code)) {
+      const valueStart = index;
+      while (index < length) {
+        const nextCode = source.charCodeAt(index);
+        if (!isDigitCode(nextCode) && nextCode !== CHAR_DOT) {
+          break;
+        }
         index += 1;
         column += 1;
       }
       tokens.push({
         type: "number",
-        value,
+        value: source.slice(valueStart, index),
         range: createRange(start, createPosition(line, column, index)),
       });
       continue;
     }
 
-    if (/[A-Za-z_]/.test(char)) {
-      let value = "";
-      while (index < source.length && isAlphaNumeric(source[index])) {
-        value += source[index];
+    if (isIdentifierStartCode(code)) {
+      const valueStart = index;
+      while (index < length && isIdentifierCode(source.charCodeAt(index))) {
         index += 1;
         column += 1;
       }
       tokens.push({
         type: "ident",
-        value,
+        value: source.slice(valueStart, index),
         range: createRange(start, createPosition(line, column, index)),
       });
       continue;

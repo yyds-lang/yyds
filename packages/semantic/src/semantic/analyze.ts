@@ -27,8 +27,7 @@ export interface SemanticModel {
 }
 
 interface TrackRefItem {
-  owner: TrackNode;
-  ownerSection: SectionNode;
+  ownerKey: string;
   targetSection: string;
   targetTrack: string;
 }
@@ -39,7 +38,7 @@ function createTrackKey(sectionName: string, trackIndex: number): string {
 
 function pushDiagnostic(
   diagnostics: Diagnostic[],
-  track: TrackNode,
+  range: Range,
   code: string,
   message: string,
 ): void {
@@ -47,7 +46,7 @@ function pushDiagnostic(
     code,
     severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
     message,
-    range: track.range,
+    range,
   });
 }
 
@@ -55,10 +54,13 @@ export function analyze(program: ProgramNode): SemanticModel {
   const sectionSet = new Set<string>();
   const macroSet = new Set<string>();
   const diagnostics: Diagnostic[] = [];
-  const sectionList: SectionNode[] = [];
   const definitions: SymbolDefinition[] = [];
   const references: SymbolReference[] = [];
+  const pendingMacroRefs: SymbolReference[] = [];
   const refs: TrackRefItem[] = [];
+  const sectionMap = new Map<string, SectionNode>();
+  const trackMapBySection = new Map<string, Map<string, number>>();
+  const trackByKey = new Map<string, TrackNode>();
 
   const pushDefinition = (definition: SymbolDefinition): void => {
     definitions.push(definition);
@@ -88,153 +90,154 @@ export function analyze(program: ProgramNode): SemanticModel {
         range: node.nameRange,
         detail: `[${node.value}]`,
       });
+      continue;
     }
-  }
 
-  for (const node of program.body) {
-    if (node.type === "Section") {
-      sectionList.push(node);
-      const sectionSymbolId = `section:${node.name}`;
-      pushDefinition({
-        id: sectionSymbolId,
-        kind: "section",
-        name: node.name,
-        range: node.nameRange,
-      });
-      if (sectionSet.has(node.name)) {
-        diagnostics.push({
-          code: YYDS_DIAGNOSTIC_CODES.SEM_DUPLICATE_SECTION,
-          severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
-          message: `Duplicate section "${node.name}".`,
-          range: node.range,
-        });
-      } else {
-        sectionSet.add(node.name);
-      }
-      for (const track of node.tracks) {
-        pushDefinition({
-          id: `track:${node.name}:${track.name}`,
-          kind: "track",
-          name: track.name,
-          range: track.nameRange,
-          container: node.name,
-        });
-
-        for (const bar of track.bars) {
-          for (const chordRef of bar.chordRefs) {
-            const symbolId = `macro:${chordRef.name}`;
-            pushReference({
-              id: symbolId,
-              kind: "macro",
-              name: chordRef.name,
-              range: chordRef.range,
-            });
-            if (!macroSet.has(chordRef.name)) {
-              diagnostics.push({
-                code: YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_CHORD_ALIAS,
-                severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
-                message: `Unknown chord alias "${chordRef.name}".`,
-                range: chordRef.range,
-              });
-            }
-          }
-        }
-
-        if (track.ref) {
-          const sectionSymbolId = `section:${track.ref.section}`;
-          const trackSymbolId = `track:${track.ref.section}:${track.ref.track}`;
-          if (track.ref.sectionRange) {
-            pushReference({
-              id: sectionSymbolId,
-              kind: "section",
-              name: track.ref.section,
-              range: track.ref.sectionRange,
-            });
-          }
-          if (track.ref.trackRange) {
-            pushReference({
-              id: trackSymbolId,
-              kind: "track",
-              name: track.ref.track,
-              range: track.ref.trackRange,
-            });
-          }
-          refs.push({
-            owner: track,
-            ownerSection: node,
-            targetSection: track.ref.section,
-            targetTrack: track.ref.track,
-          });
-        }
-      }
-    } else if (node.type === "Play") {
+    if (node.type === "Play") {
       pushReference({
         id: `section:${node.section}`,
         kind: "section",
         name: node.section,
         range: node.sectionRange,
       });
+      continue;
     }
+
+    if (node.type !== "Section") {
+      continue;
+    }
+
+    if (!sectionMap.has(node.name)) {
+      sectionMap.set(node.name, node);
+    }
+    if (sectionSet.has(node.name)) {
+      diagnostics.push({
+        code: YYDS_DIAGNOSTIC_CODES.SEM_DUPLICATE_SECTION,
+        severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
+        message: `Duplicate section "${node.name}".`,
+        range: node.range,
+      });
+    } else {
+      sectionSet.add(node.name);
+    }
+    pushDefinition({
+      id: `section:${node.name}`,
+      kind: "section",
+      name: node.name,
+      range: node.nameRange,
+    });
+
+    const trackMap = new Map<string, number>();
+    trackMapBySection.set(node.name, trackMap);
+    node.tracks.forEach((track, index) => {
+      const trackKey = createTrackKey(node.name, index);
+      trackByKey.set(trackKey, track);
+      if (!trackMap.has(track.name)) {
+        trackMap.set(track.name, index);
+      }
+      pushDefinition({
+        id: `track:${node.name}:${track.name}`,
+        kind: "track",
+        name: track.name,
+        range: track.nameRange,
+        container: node.name,
+      });
+
+      for (const bar of track.bars) {
+        for (const chordRef of bar.chordRefs) {
+          const symbolId = `macro:${chordRef.name}`;
+          const reference: SymbolReference = {
+            id: symbolId,
+            kind: "macro",
+            name: chordRef.name,
+            range: chordRef.range,
+          };
+          pushReference(reference);
+          pendingMacroRefs.push(reference);
+        }
+      }
+
+      if (!track.ref) {
+        return;
+      }
+      if (track.ref.sectionRange) {
+        pushReference({
+          id: `section:${track.ref.section}`,
+          kind: "section",
+          name: track.ref.section,
+          range: track.ref.sectionRange,
+        });
+      }
+      if (track.ref.trackRange) {
+        pushReference({
+          id: `track:${track.ref.section}:${track.ref.track}`,
+          kind: "track",
+          name: track.ref.track,
+          range: track.ref.trackRange,
+        });
+      }
+      refs.push({
+        ownerKey: trackKey,
+        targetSection: track.ref.section,
+        targetTrack: track.ref.track,
+      });
+    });
   }
 
-  const sectionMap = new Map<string, SectionNode>();
-  for (const section of sectionList) {
-    if (!sectionMap.has(section.name)) {
-      sectionMap.set(section.name, section);
+  for (const reference of pendingMacroRefs) {
+    if (!macroSet.has(reference.name)) {
+      diagnostics.push({
+        code: YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_CHORD_ALIAS,
+        severity: YYDS_DIAGNOSTIC_SEVERITY.ERROR,
+        message: `Unknown chord alias "${reference.name}".`,
+        range: reference.range,
+      });
     }
   }
 
   const trackGraph = new Map<string, string>();
-  for (const section of sectionList) {
-    section.tracks.forEach((track, index) => {
-      const currentKey = createTrackKey(section.name, index);
-      if (!track.ref) {
-        return;
-      }
-      const targetSection = sectionMap.get(track.ref.section);
-      if (!targetSection) {
-        pushDiagnostic(
-          diagnostics,
-          track,
-          YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_SECTION,
-          `Unknown referenced section "${track.ref.section}".`,
-        );
-        return;
-      }
-      const targetIndex = targetSection.tracks.findIndex((item) => item.name === track.ref?.track);
-      if (targetIndex < 0) {
-        pushDiagnostic(
-          diagnostics,
-          track,
-          YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_TRACK,
-          `Unknown referenced track "${track.ref.track}" in section "${track.ref.section}".`,
-        );
-        return;
-      }
-      trackGraph.set(currentKey, createTrackKey(targetSection.name, targetIndex));
-    });
+  for (const item of refs) {
+    const ownerTrack = trackByKey.get(item.ownerKey);
+    if (!ownerTrack) {
+      continue;
+    }
+    const targetSection = sectionMap.get(item.targetSection);
+    if (!targetSection) {
+      pushDiagnostic(
+        diagnostics,
+        ownerTrack.range,
+        YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_SECTION,
+        `Unknown referenced section "${item.targetSection}".`,
+      );
+      continue;
+    }
+    const targetTrackMap = trackMapBySection.get(targetSection.name);
+    const targetIndex = targetTrackMap?.get(item.targetTrack);
+    if (targetIndex === undefined) {
+      pushDiagnostic(
+        diagnostics,
+        ownerTrack.range,
+        YYDS_DIAGNOSTIC_CODES.SEM_UNKNOWN_TRACK,
+        `Unknown referenced track "${item.targetTrack}" in section "${item.targetSection}".`,
+      );
+      continue;
+    }
+    trackGraph.set(item.ownerKey, createTrackKey(targetSection.name, targetIndex));
   }
 
   const visiting = new Set<string>();
   const visited = new Set<string>();
-  const keyToTrack = new Map<string, TrackNode>();
-
-  for (const section of sectionList) {
-    section.tracks.forEach((track, index) => {
-      keyToTrack.set(createTrackKey(section.name, index), track);
-    });
-  }
 
   const detectCycle = (key: string): void => {
     if (visited.has(key)) {
       return;
     }
     if (visiting.has(key)) {
-      const track = keyToTrack.get(key);
+      const track = trackByKey.get(key);
       if (track) {
         pushDiagnostic(
           diagnostics,
-          track,
+          track.range,
           YYDS_DIAGNOSTIC_CODES.SEM_CYCLIC_REF,
           "Cyclic track reference detected.",
         );
@@ -250,11 +253,7 @@ export function analyze(program: ProgramNode): SemanticModel {
     visited.add(key);
   };
 
-  for (const item of refs) {
-    const key = createTrackKey(
-      item.ownerSection.name,
-      item.ownerSection.tracks.indexOf(item.owner),
-    );
+  for (const key of trackGraph.keys()) {
     detectCycle(key);
   }
 
