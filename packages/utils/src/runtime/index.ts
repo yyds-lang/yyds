@@ -1,1 +1,1 @@
-export { fn } from "./fn.ts";
+export { fn } from './fn.ts'

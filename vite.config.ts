@@ -1,17 +1,21 @@
-import { defineConfig } from "vite-plus";
+import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
   staged: {
-    "*": "vp check --fix",
+    '*': 'vp check --fix'
   },
-  fmt: {},
+  fmt: {
+    singleQuote: true,
+    semi: false,
+    trailingComma: 'none'
+  },
   lint: {
-    ignorePatterns: ["apps/website/public/wasm/wasm_exec.js", "scripts/vite/**"],
-    jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
-    rules: { "vite-plus/prefer-vite-plus-imports": "error" },
-    options: { typeAware: true, typeCheck: true },
+    ignorePatterns: ['apps/website/public/wasm/wasm_exec.js', 'scripts/vite/**'],
+    jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
+    rules: { 'vite-plus/prefer-vite-plus-imports': 'error' },
+    options: { typeAware: true, typeCheck: true }
   },
   run: {
-    cache: true,
-  },
-});
+    cache: true
+  }
+})

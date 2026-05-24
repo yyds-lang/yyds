@@ -1,125 +1,125 @@
-import type { Range } from "@yyds-lang/ast/types";
-import { parse } from "@yyds-lang/parser";
-import { analyze, type SymbolDefinition, type SymbolReference } from "@yyds-lang/semantic";
+import type { Range } from '@yyds-lang/ast/types'
+import { parse } from '@yyds-lang/parser'
+import { analyze, type SymbolDefinition, type SymbolReference } from '@yyds-lang/semantic'
 
 export interface TextPosition {
-  line: number;
-  column: number;
+  line: number
+  column: number
 }
 
 export interface HoverResult {
-  symbolId: string;
-  title: string;
-  value?: string;
-  range: Range;
+  symbolId: string
+  title: string
+  value?: string
+  range: Range
 }
 
 export interface RenameEdit {
-  range: Range;
-  newName: string;
+  range: Range
+  newName: string
 }
 
 export interface YydsDocumentAnalysis {
-  definitions: SymbolDefinition[];
-  references: SymbolReference[];
-  diagnostics: ReturnType<typeof analyze>["diagnostics"];
+  definitions: SymbolDefinition[]
+  references: SymbolReference[]
+  diagnostics: ReturnType<typeof analyze>['diagnostics']
 }
 
 function isInRange(position: TextPosition, range: Range): boolean {
   if (position.line < range.start.line || position.line > range.end.line) {
-    return false;
+    return false
   }
   if (position.line === range.start.line && position.column < range.start.column) {
-    return false;
+    return false
   }
   if (position.line === range.end.line && position.column > range.end.column) {
-    return false;
+    return false
   }
-  return true;
+  return true
 }
 
 export function analyzeDocument(text: string): YydsDocumentAnalysis {
-  const semantic = analyze(parse(text));
+  const semantic = analyze(parse(text))
   return {
     definitions: semantic.definitions,
     references: semantic.references,
-    diagnostics: semantic.diagnostics,
-  };
+    diagnostics: semantic.diagnostics
+  }
 }
 
 function findSymbolIdAtPosition(
   analysis: YydsDocumentAnalysis,
-  position: TextPosition,
+  position: TextPosition
 ): string | undefined {
-  const ref = analysis.references.find((item) => isInRange(position, item.range));
+  const ref = analysis.references.find((item) => isInRange(position, item.range))
   if (ref) {
-    return ref.id;
+    return ref.id
   }
-  const def = analysis.definitions.find((item) => isInRange(position, item.range));
-  return def?.id;
+  const def = analysis.definitions.find((item) => isInRange(position, item.range))
+  return def?.id
 }
 
 export function getDefinition(
   analysis: YydsDocumentAnalysis,
-  position: TextPosition,
+  position: TextPosition
 ): SymbolDefinition | undefined {
-  const symbolId = findSymbolIdAtPosition(analysis, position);
+  const symbolId = findSymbolIdAtPosition(analysis, position)
   if (!symbolId) {
-    return undefined;
+    return undefined
   }
-  return analysis.definitions.find((item) => item.id === symbolId);
+  return analysis.definitions.find((item) => item.id === symbolId)
 }
 
 export function getHover(
   analysis: YydsDocumentAnalysis,
-  position: TextPosition,
+  position: TextPosition
 ): HoverResult | undefined {
-  const definition = getDefinition(analysis, position);
+  const definition = getDefinition(analysis, position)
   if (!definition) {
-    return undefined;
+    return undefined
   }
-  if (definition.kind === "macro") {
+  if (definition.kind === 'macro') {
     return {
       symbolId: definition.id,
       title: `%${definition.name}`,
       value: definition.detail,
-      range: definition.range,
-    };
+      range: definition.range
+    }
   }
-  if (definition.kind === "track") {
+  if (definition.kind === 'track') {
     return {
       symbolId: definition.id,
       title: `track ${definition.name}`,
       value: definition.container ? `section ${definition.container}` : undefined,
-      range: definition.range,
-    };
+      range: definition.range
+    }
   }
   return {
     symbolId: definition.id,
     title: `${definition.kind} ${definition.name}`,
-    range: definition.range,
-  };
+    range: definition.range
+  }
 }
 
 export function getRenameEdits(
   analysis: YydsDocumentAnalysis,
   position: TextPosition,
-  newName: string,
+  newName: string
 ): RenameEdit[] {
-  const symbolId = findSymbolIdAtPosition(analysis, position);
+  const symbolId = findSymbolIdAtPosition(analysis, position)
   if (!symbolId) {
-    return [];
+    return []
   }
-  const edits: RenameEdit[] = [];
+  const edits: RenameEdit[] = []
   for (const definition of analysis.definitions) {
     if (definition.id === symbolId) {
-      edits.push({ range: definition.range, newName });
+      edits.push({ range: definition.range, newName })
     }
   }
   for (const reference of analysis.references) {
     if (reference.id === symbolId) {
-      edits.push({ range: reference.range, newName });
+      edits.push({ range: reference.range, newName })
     }
   }
-  return edits;
+  return edits
 }

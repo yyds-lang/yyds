@@ -2,5 +2,5 @@ export {
   analyzeDocument,
   getDefinition,
   getHover,
-  getRenameEdits,
-} from "./language-service/service.ts";
+  getRenameEdits
+} from './language-service/service.ts'

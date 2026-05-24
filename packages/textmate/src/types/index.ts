@@ -1,7 +1,7 @@
-export { yydsLanguageConfiguration } from "../language/config.ts";
-export type { YydsLanguageConfiguration } from "../language/config.ts";
-export { YYDS_KEYWORDS } from "../textmate/keywords.ts";
-export type { YydsKeyword } from "../textmate/keywords.ts";
-export { YYDS_SCOPE_NAME, yydsGrammar } from "../textmate/grammar.ts";
-export { toShikiLanguageDefinition } from "../textmate/shiki.ts";
-export type { ShikiLanguageDefinition } from "../textmate/shiki.ts";
+export { yydsLanguageConfiguration } from '../language/config.ts'
+export type { YydsLanguageConfiguration } from '../language/config.ts'
+export { YYDS_KEYWORDS } from '../textmate/keywords.ts'
+export type { YydsKeyword } from '../textmate/keywords.ts'
+export { YYDS_SCOPE_NAME, yydsGrammar } from '../textmate/grammar.ts'
+export { toShikiLanguageDefinition } from '../textmate/shiki.ts'
+export type { ShikiLanguageDefinition } from '../textmate/shiki.ts'

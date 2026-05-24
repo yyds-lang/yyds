@@ -1,67 +1,67 @@
 export type WorkerRequest =
   | {
-      id: number;
-      type: "init";
+      id: number
+      type: 'init'
     }
   | {
-      id: number;
-      type: "render";
+      id: number
+      type: 'render'
       payload: {
-        source: string;
-        instrument: string;
-      };
+        source: string
+        instrument: string
+      }
     }
   | {
-      id: number;
-      type: "format";
+      id: number
+      type: 'format'
       payload: {
-        source: string;
-      };
-    };
+        source: string
+      }
+    }
 
 export type WorkerSuccessResponse =
   | {
-      id: number;
-      ok: true;
-      type: "init";
+      id: number
+      ok: true
+      type: 'init'
     }
   | {
-      id: number;
-      ok: true;
-      type: "render";
+      id: number
+      ok: true
+      type: 'render'
       payload: {
-        wav: ArrayBuffer;
-        size: number;
-        durationSeconds: number;
+        wav: ArrayBuffer
+        size: number
+        durationSeconds: number
         roll: {
           notes: Array<{
-            start: number;
-            duration: number;
-            pitch: number;
-            velocity: number;
-            symbol: string;
-            instrument: string;
-          }>;
-          totalTicks: number;
-          minPitch: number;
-          maxPitch: number;
-          tempo: number;
-        };
-      };
+            start: number
+            duration: number
+            pitch: number
+            velocity: number
+            symbol: string
+            instrument: string
+          }>
+          totalTicks: number
+          minPitch: number
+          maxPitch: number
+          tempo: number
+        }
+      }
     }
   | {
-      id: number;
-      ok: true;
-      type: "format";
+      id: number
+      ok: true
+      type: 'format'
       payload: {
-        source: string;
-      };
-    };
+        source: string
+      }
+    }
 
 export interface WorkerErrorResponse {
-  id: number;
-  ok: false;
-  error: string;
+  id: number
+  ok: false
+  error: string
 }
 
-export type WorkerResponse = WorkerSuccessResponse | WorkerErrorResponse;
+export type WorkerResponse = WorkerSuccessResponse | WorkerErrorResponse

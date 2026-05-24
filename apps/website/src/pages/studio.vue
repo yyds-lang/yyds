@@ -1,110 +1,110 @@
 <script setup lang="ts">
-import { DEFAULT_SOURCE, createYydsEditor } from "../editor/monaco";
-import { formatYYDS, initWasm, renderWav } from "../lib/wasmClient";
+import { DEFAULT_SOURCE, createYydsEditor } from '../editor/monaco'
+import { formatYYDS, initWasm, renderWav } from '../lib/wasmClient'
 
-const instruments = ["piano", "guitar", "drums", "dizi"] as const;
+const instruments = ['piano', 'guitar', 'drums', 'dizi'] as const
 
-const editorEl = ref<HTMLElement | null>(null);
-const source = ref(DEFAULT_SOURCE);
-const selectedInstrument = ref<(typeof instruments)[number]>("piano");
-const status = ref<"idle" | "loading" | "success" | "error">("loading");
-const statusText = ref("正在初始化 WASM...");
-const errorText = ref("");
-const audioUrl = ref("");
-const renderMs = ref(0);
-const durationSeconds = ref(0);
-const wavSize = ref(0);
-const isRendering = computed(() => status.value === "loading");
+const editorEl = ref<HTMLElement | null>(null)
+const source = ref(DEFAULT_SOURCE)
+const selectedInstrument = ref<(typeof instruments)[number]>('piano')
+const status = ref<'idle' | 'loading' | 'success' | 'error'>('loading')
+const statusText = ref('正在初始化 WASM...')
+const errorText = ref('')
+const audioUrl = ref('')
+const renderMs = ref(0)
+const durationSeconds = ref(0)
+const wavSize = ref(0)
+const isRendering = computed(() => status.value === 'loading')
 
-let editorHandle: Awaited<ReturnType<typeof createYydsEditor>> | null = null;
+let editorHandle: Awaited<ReturnType<typeof createYydsEditor>> | null = null
 
 function stripTrackInstrumentHints(input: string): string {
-  return input.replace(/\btrack\s*\[[^\]\r\n]+\]\s*/g, "track ");
+  return input.replace(/\btrack\s*\[[^\]\r\n]+\]\s*/g, 'track ')
 }
 
 function clearAudio(): void {
   if (audioUrl.value) {
-    URL.revokeObjectURL(audioUrl.value);
-    audioUrl.value = "";
+    URL.revokeObjectURL(audioUrl.value)
+    audioUrl.value = ''
   }
 }
 
 async function bootstrap(): Promise<void> {
-  status.value = "loading";
-  statusText.value = "正在初始化 WASM...";
-  errorText.value = "";
+  status.value = 'loading'
+  statusText.value = '正在初始化 WASM...'
+  errorText.value = ''
   try {
-    await initWasm();
-    status.value = "idle";
-    statusText.value = "就绪";
+    await initWasm()
+    status.value = 'idle'
+    statusText.value = '就绪'
   } catch (error) {
-    status.value = "error";
-    statusText.value = "初始化失败";
-    errorText.value = error instanceof Error ? error.message : String(error);
+    status.value = 'error'
+    statusText.value = '初始化失败'
+    errorText.value = error instanceof Error ? error.message : String(error)
   }
 }
 
 async function runFormat(): Promise<void> {
   if (isRendering.value || !editorHandle) {
-    return;
+    return
   }
-  status.value = "loading";
-  statusText.value = "格式化中...";
-  errorText.value = "";
+  status.value = 'loading'
+  statusText.value = '格式化中...'
+  errorText.value = ''
   try {
-    const formatted = await formatYYDS(editorHandle.getValue());
-    editorHandle.setValue(formatted);
-    source.value = formatted;
-    status.value = "success";
-    statusText.value = "格式化完成";
+    const formatted = await formatYYDS(editorHandle.getValue())
+    editorHandle.setValue(formatted)
+    source.value = formatted
+    status.value = 'success'
+    statusText.value = '格式化完成'
   } catch (error) {
-    status.value = "error";
-    statusText.value = "格式化失败";
-    errorText.value = error instanceof Error ? error.message : String(error);
+    status.value = 'error'
+    statusText.value = '格式化失败'
+    errorText.value = error instanceof Error ? error.message : String(error)
   }
 }
 
 async function runRender(): Promise<void> {
   if (isRendering.value || !editorHandle) {
-    return;
+    return
   }
-  status.value = "loading";
-  statusText.value = "正在生成 WAV...";
-  errorText.value = "";
-  clearAudio();
+  status.value = 'loading'
+  statusText.value = '正在生成 WAV...'
+  errorText.value = ''
+  clearAudio()
   try {
-    const startedAt = performance.now();
-    const currentSource = editorHandle.getValue();
-    const sourceToRender = stripTrackInstrumentHints(currentSource);
-    const result = await renderWav(sourceToRender, selectedInstrument.value);
-    renderMs.value = Math.round(performance.now() - startedAt);
-    durationSeconds.value = result.durationSeconds;
-    wavSize.value = result.size;
-    const wavBlob = new Blob([result.bytes], { type: "audio/wav" });
-    audioUrl.value = URL.createObjectURL(wavBlob);
-    status.value = "success";
-    statusText.value = "渲染成功";
-    source.value = editorHandle.getValue();
+    const startedAt = performance.now()
+    const currentSource = editorHandle.getValue()
+    const sourceToRender = stripTrackInstrumentHints(currentSource)
+    const result = await renderWav(sourceToRender, selectedInstrument.value)
+    renderMs.value = Math.round(performance.now() - startedAt)
+    durationSeconds.value = result.durationSeconds
+    wavSize.value = result.size
+    const wavBlob = new Blob([result.bytes], { type: 'audio/wav' })
+    audioUrl.value = URL.createObjectURL(wavBlob)
+    status.value = 'success'
+    statusText.value = '渲染成功'
+    source.value = editorHandle.getValue()
   } catch (error) {
-    status.value = "error";
-    statusText.value = "渲染失败";
-    errorText.value = error instanceof Error ? error.message : String(error);
+    status.value = 'error'
+    statusText.value = '渲染失败'
+    errorText.value = error instanceof Error ? error.message : String(error)
   }
 }
 
 onMounted(async () => {
   if (editorEl.value) {
     editorHandle = await createYydsEditor(editorEl.value, (next) => {
-      source.value = next;
-    });
+      source.value = next
+    })
   }
-  await bootstrap();
-});
+  await bootstrap()
+})
 
 onBeforeUnmount(() => {
-  editorHandle?.dispose();
-  clearAudio();
-});
+  editorHandle?.dispose()
+  clearAudio()
+})
 </script>
 
 <template>

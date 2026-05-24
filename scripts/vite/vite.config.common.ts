@@ -1,22 +1,26 @@
-import { mergeConfig, type UserConfig } from "vite-plus";
+import { mergeConfig, type UserConfig } from 'vite-plus'
 
 const commonConfig: UserConfig = {
   pack: {
     dts: true,
-    exports: true,
+    exports: true
   },
   lint: {
     options: {
       typeAware: true,
-      typeCheck: true,
-    },
+      typeCheck: true
+    }
   },
   build: {
-    minify: true,
+    minify: true
   },
-  fmt: {},
-};
+  fmt: {
+    singleQuote: true,
+    semi: false,
+    trailingComma: 'none'
+  }
+}
 
 export function mergeCommonConfig(config: UserConfig): UserConfig {
-  return mergeConfig(commonConfig, config);
+  return mergeConfig(commonConfig, config)
 }

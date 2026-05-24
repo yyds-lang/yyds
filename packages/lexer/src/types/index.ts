@@ -1,1 +1,1 @@
-export { tokenize } from "../lexer/tokenize.ts";
+export { tokenize } from '../lexer/tokenize.ts'

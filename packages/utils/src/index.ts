@@ -1,1 +1,1 @@
-export { fn } from "./runtime/index.ts";
+export { fn } from './runtime/index.ts'

@@ -1,40 +1,40 @@
-import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
-import { formatYYDS, initWasm, renderWav } from "./wasmClient";
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
+import { formatYYDS, initWasm, renderWav } from './wasmClient'
 
 class FakeWorker {
-  public onmessage: ((event: MessageEvent) => void) | null = null;
-  public onerror: ((event: ErrorEvent) => void) | null = null;
+  public onmessage: ((event: MessageEvent) => void) | null = null
+  public onerror: ((event: ErrorEvent) => void) | null = null
 
   postMessage(message: { id: number; type: string }) {
     queueMicrotask(() => {
       if (!this.onmessage) {
-        return;
+        return
       }
-      if (message.type === "init") {
+      if (message.type === 'init') {
         this.onmessage(
-          new MessageEvent("message", { data: { id: message.id, ok: true, type: "init" } }),
-        );
-        return;
+          new MessageEvent('message', { data: { id: message.id, ok: true, type: 'init' } })
+        )
+        return
       }
-      if (message.type === "format") {
+      if (message.type === 'format') {
         this.onmessage(
-          new MessageEvent("message", {
+          new MessageEvent('message', {
             data: {
               id: message.id,
               ok: true,
-              type: "format",
-              payload: { source: "formatted" },
-            },
-          }),
-        );
-        return;
+              type: 'format',
+              payload: { source: 'formatted' }
+            }
+          })
+        )
+        return
       }
       this.onmessage(
-        new MessageEvent("message", {
+        new MessageEvent('message', {
           data: {
             id: message.id,
             ok: true,
-            type: "render",
+            type: 'render',
             payload: {
               wav: new Uint8Array([1, 2, 3]).buffer,
               size: 3,
@@ -44,32 +44,32 @@ class FakeWorker {
                 totalTicks: 0,
                 minPitch: 60,
                 maxPitch: 72,
-                tempo: 120,
-              },
-            },
-          },
-        }),
-      );
-    });
+                tempo: 120
+              }
+            }
+          }
+        })
+      )
+    })
   }
 }
 
-describe("wasmClient", () => {
+describe('wasmClient', () => {
   beforeEach(() => {
-    vi.stubGlobal("Worker", FakeWorker);
-  });
+    vi.stubGlobal('Worker', FakeWorker)
+  })
 
-  it("initializes worker", async () => {
-    await expect(initWasm()).resolves.toBeUndefined();
-  });
+  it('initializes worker', async () => {
+    await expect(initWasm()).resolves.toBeUndefined()
+  })
 
-  it("formats source via worker", async () => {
-    await expect(formatYYDS("source")).resolves.toBe("formatted");
-  });
+  it('formats source via worker', async () => {
+    await expect(formatYYDS('source')).resolves.toBe('formatted')
+  })
 
-  it("renders wav via worker", async () => {
-    const result = await renderWav("source", "piano");
-    expect(result.size).toBe(3);
-    expect(result.bytes.length).toBe(3);
-  });
-});
+  it('renders wav via worker', async () => {
+    const result = await renderWav('source', 'piano')
+    expect(result.size).toBe(3)
+    expect(result.bytes.length).toBe(3)
+  })
+})

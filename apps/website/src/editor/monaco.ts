@@ -1,4 +1,4 @@
-import { init } from "modern-monaco";
+import { init } from 'modern-monaco'
 
 const DEFAULT_SOURCE = `yyds 2
 song "Demo"
@@ -14,117 +14,117 @@ section main {
   }
 }
 
-play main`;
+play main`
 
-let monacoInstancePromise: ReturnType<typeof init> | null = null;
-let yydsRegistered = false;
+let monacoInstancePromise: ReturnType<typeof init> | null = null
+let yydsRegistered = false
 
 async function getMonaco() {
   if (!monacoInstancePromise) {
     monacoInstancePromise = init({
-      defaultTheme: "vitesse-dark",
-    });
+      defaultTheme: 'vitesse-dark'
+    })
   }
-  return monacoInstancePromise;
+  return monacoInstancePromise
 }
 
 function registerYyds(monaco: Awaited<ReturnType<typeof init>>): void {
   if (yydsRegistered) {
-    return;
+    return
   }
-  yydsRegistered = true;
-  monaco.languages.register({ id: "yyds" });
-  monaco.languages.setMonarchTokensProvider("yyds", {
+  yydsRegistered = true
+  monaco.languages.register({ id: 'yyds' })
+  monaco.languages.setMonarchTokensProvider('yyds', {
     keywords: [
-      "yyds",
-      "song",
-      "tempo",
-      "meter",
-      "key",
-      "unit",
-      "velocity",
-      "section",
-      "track",
-      "play",
-      "refer",
-      "repeat",
-      "after",
+      'yyds',
+      'song',
+      'tempo',
+      'meter',
+      'key',
+      'unit',
+      'velocity',
+      'section',
+      'track',
+      'play',
+      'refer',
+      'repeat',
+      'after'
     ],
     tokenizer: {
       root: [
-        [/\/\/.*$/, "comment"],
-        [/".*?"/, "string"],
-        [/\b(?:[A-G](?:#|b)?\d|R)\b/, "number"],
-        [/\b\d+(?:\.\d+)?\b/, "number.float"],
-        [/\||@|%|=|->|-|\/(?:w|h|q|e|s|\d+)\.?/, "operator"],
-        [/[{}[\]()]/, "delimiter.bracket"],
+        [/\/\/.*$/, 'comment'],
+        [/".*?"/, 'string'],
+        [/\b(?:[A-G](?:#|b)?\d|R)\b/, 'number'],
+        [/\b\d+(?:\.\d+)?\b/, 'number.float'],
+        [/\||@|%|=|->|-|\/(?:w|h|q|e|s|\d+)\.?/, 'operator'],
+        [/[{}[\]()]/, 'delimiter.bracket'],
         [
           /\b[a-zA-Z_][\w-]*\b/,
           {
             cases: {
-              "@keywords": "keyword",
-              "@default": "identifier",
-            },
-          },
-        ],
-      ],
-    },
-  });
-  monaco.languages.setLanguageConfiguration("yyds", {
+              '@keywords': 'keyword',
+              '@default': 'identifier'
+            }
+          }
+        ]
+      ]
+    }
+  })
+  monaco.languages.setLanguageConfiguration('yyds', {
     comments: {
-      lineComment: "//",
-      blockComment: ["/*", "*/"],
+      lineComment: '//',
+      blockComment: ['/*', '*/']
     },
     brackets: [
-      ["{", "}"],
-      ["[", "]"],
-      ["(", ")"],
+      ['{', '}'],
+      ['[', ']'],
+      ['(', ')']
     ],
     autoClosingPairs: [
-      { open: "{", close: "}" },
-      { open: "[", close: "]" },
-      { open: "(", close: ")" },
-      { open: '"', close: '"' },
-    ],
-  });
+      { open: '{', close: '}' },
+      { open: '[', close: ']' },
+      { open: '(', close: ')' },
+      { open: '"', close: '"' }
+    ]
+  })
 }
 
 export async function createYydsEditor(
   el: HTMLElement,
   onChange: (source: string) => void,
-  source = DEFAULT_SOURCE,
+  source = DEFAULT_SOURCE
 ): Promise<{
-  getValue: () => string;
-  setValue: (next: string) => void;
-  dispose: () => void;
+  getValue: () => string
+  setValue: (next: string) => void
+  dispose: () => void
 }> {
-  const monaco = await getMonaco();
-  registerYyds(monaco);
-  const model = monaco.editor.createModel(source, "yyds");
+  const monaco = await getMonaco()
+  registerYyds(monaco)
+  const model = monaco.editor.createModel(source, 'yyds')
   const editor = monaco.editor.create(el, {
     model,
     automaticLayout: true,
     minimap: { enabled: false },
     fontSize: 14,
     lineNumbersMinChars: 3,
-    scrollBeyondLastLine: false,
-  });
+    scrollBeyondLastLine: false
+  })
   const disposable = editor.onDidChangeModelContent(() => {
-    onChange(editor.getValue());
-  });
-  onChange(editor.getValue());
+    onChange(editor.getValue())
+  })
+  onChange(editor.getValue())
 
   return {
     getValue: () => editor.getValue(),
     setValue: (next: string) => {
-      editor.setValue(next);
+      editor.setValue(next)
     },
     dispose: () => {
-      disposable.dispose();
-      model.dispose();
-      editor.dispose();
-    },
-  };
+      disposable.dispose()
+      model.dispose()
+      editor.dispose()
+    }
+  }
 }
 
-export { DEFAULT_SOURCE };
+export { DEFAULT_SOURCE }

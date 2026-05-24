@@ -5,5 +5,5 @@ export {
   parseTokensWithDiagnostics,
   parseWithDiagnostics,
   parseTokens,
-  type ParseResult,
-} from "../parser/parse.ts";
+  type ParseResult
+} from '../parser/parse.ts'
