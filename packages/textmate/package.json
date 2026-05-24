@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/textmate",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "YYDS TextMate grammar package.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
