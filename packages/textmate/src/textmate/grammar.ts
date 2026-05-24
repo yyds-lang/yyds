@@ -53,4 +53,4 @@ export const yydsGrammar = {
       patterns: [{ name: 'keyword.operator.yyds', match: '\\||@|%|=|->|-' }]
     }
   }
-} as const
+}
