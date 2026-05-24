@@ -1,6 +1,6 @@
 {
   "name": "yyds-lang",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Aggregated exports for YYDS core packages.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
