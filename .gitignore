@@ -29,5 +29,3 @@ dist-ssr
 # Non-business generated declarations for config helpers
 scripts/vite/*.d.ts
 
-# Auto-generated files
-apps/website/.auto-generated

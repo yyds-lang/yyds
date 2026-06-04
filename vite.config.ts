@@ -10,7 +10,7 @@ export default defineConfig({
     trailingComma: 'none'
   },
   lint: {
-    ignorePatterns: ['apps/website/public/wasm/wasm_exec.js', 'scripts/vite/**'],
+    ignorePatterns: ['scripts/vite/**'],
     jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
     rules: { 'vite-plus/prefer-vite-plus-imports': 'error' },
     options: { typeAware: true, typeCheck: true }

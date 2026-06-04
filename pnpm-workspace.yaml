@@ -1,5 +1,4 @@
 packages:
-  - apps/*
   - packages/*
   - tools/*
 
@@ -11,19 +10,7 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@latest
   vitest: npm:@voidzero-dev/vite-plus-test@latest
   vite-plus: latest
-  vue: ^3.5.34
-  vue-router: ^5.0.7
-  modern-monaco: ^0.4.1
-  '@shikijs/monaco': ^3.15.0
-  shiki: ^3.15.0
-  yyds-lang-shiki: ^0.0.4
-  '@vitejs/plugin-vue': ^6.0.7
   '@typescript/native-preview': 7.0.0-dev.20260509.2
-  unplugin-auto-import: ^21.0.0
-  unplugin-vue-components: ^32.1.0
-  unocss: ^66.7.0
-  '@unocss/vite': ^66.7.0
-  '@unocss/reset': ^66.7.0
   bumpp: ^11.1.0
 
 overrides:
@@ -40,4 +27,3 @@ peerDependencyRules:
 
 minimumReleaseAgeExclude:
   - '@yyds-lang/textmate'
-  - yyds-lang-shiki

@@ -33,9 +33,3 @@ vp run -r test
 ```bash
 vp run -r build
 ```
-
-- Run the development server:
-
-```bash
-vp run dev
-```
