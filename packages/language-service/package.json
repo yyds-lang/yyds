@@ -1,6 +1,6 @@
 {
   "name": "@yyds-lang/language-service",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "YYDS language service helpers for IDE features.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
