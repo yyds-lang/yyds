@@ -32,7 +32,29 @@ export default defineConfig({
     // Force a single modern-monaco runtime instance across all subpath imports.
     dedupe: ['modern-monaco'],
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@yyds-lang/ast': fileURLToPath(new URL('../../packages/ast/src/index.ts', import.meta.url)),
+      '@yyds-lang/ast/types': fileURLToPath(
+        new URL('../../packages/ast/src/types/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/formatter': fileURLToPath(
+        new URL('../../packages/formatter/src/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/language-service': fileURLToPath(
+        new URL('../../packages/language-service/src/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/language-service/types': fileURLToPath(
+        new URL('../../packages/language-service/src/types/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/lexer': fileURLToPath(
+        new URL('../../packages/lexer/src/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/parser': fileURLToPath(
+        new URL('../../packages/parser/src/index.ts', import.meta.url)
+      ),
+      '@yyds-lang/semantic': fileURLToPath(
+        new URL('../../packages/semantic/src/index.ts', import.meta.url)
+      )
     }
   }
 })

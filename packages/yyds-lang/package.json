@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@yyds-lang/ast": "workspace:*",
+    "@yyds-lang/formatter": "workspace:*",
     "@yyds-lang/language-service": "workspace:*",
     "@yyds-lang/lexer": "workspace:*",
     "@yyds-lang/parser": "workspace:*",

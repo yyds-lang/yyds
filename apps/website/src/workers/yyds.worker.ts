@@ -13,7 +13,6 @@ declare global {
   interface WorkerGlobalScope {
     Go?: new () => GoLike
     yydsRenderWav?: (source: string, instrument?: string) => unknown
-    yydsFormat?: (source: string) => unknown
   }
 }
 
@@ -70,7 +69,7 @@ async function instantiateWasm(
 async function waitForExports(): Promise<void> {
   const timeoutAt = Date.now() + 5000
   while (Date.now() < timeoutAt) {
-    if (self.yydsRenderWav && self.yydsFormat) {
+    if (self.yydsRenderWav) {
       return
     }
     await new Promise((resolve) => setTimeout(resolve, 16))
@@ -100,22 +99,6 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     }
 
     await ensureInitialized()
-
-    if (message.type === 'format') {
-      const result = self.yydsFormat?.(message.payload.source) as
-        | { ok?: boolean; source?: string; error?: string }
-        | undefined
-      if (!result?.ok) {
-        throw new Error(result?.error ?? 'YYDS format failed')
-      }
-      post({
-        id: message.id,
-        ok: true,
-        type: 'format',
-        payload: { source: result.source ?? '' }
-      })
-      return
-    }
 
     if (message.type === 'render') {
       const result = self.yydsRenderWav?.(message.payload.source, message.payload.instrument) as

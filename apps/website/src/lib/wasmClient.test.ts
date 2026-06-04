@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
-import { formatYYDS, initWasm, renderWav } from './wasmClient'
+import { initWasm, renderWav } from './wasmClient'
 
 class FakeWorker {
   public onmessage: ((event: MessageEvent) => void) | null = null
@@ -13,19 +13,6 @@ class FakeWorker {
       if (message.type === 'init') {
         this.onmessage(
           new MessageEvent('message', { data: { id: message.id, ok: true, type: 'init' } })
-        )
-        return
-      }
-      if (message.type === 'format') {
-        this.onmessage(
-          new MessageEvent('message', {
-            data: {
-              id: message.id,
-              ok: true,
-              type: 'format',
-              payload: { source: 'formatted' }
-            }
-          })
         )
         return
       }
@@ -61,10 +48,6 @@ describe('wasmClient', () => {
 
   it('initializes worker', async () => {
     await expect(initWasm()).resolves.toBeUndefined()
-  })
-
-  it('formats source via worker', async () => {
-    await expect(formatYYDS('source')).resolves.toBe('formatted')
   })
 
   it('renders wav via worker', async () => {

@@ -1,7 +1,7 @@
 {
-  "name": "@yyds-lang/language-service",
-  "version": "0.0.8",
-  "description": "YYDS language service helpers for IDE features.",
+  "name": "@yyds-lang/formatter",
+  "version": "0.0.6",
+  "description": "YYDS canonical formatter.",
   "homepage": "https://github.com/yyds-lang/yyds#readme",
   "bugs": {
     "url": "https://github.com/yyds-lang/yyds/issues"
@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@yyds-lang/ast": "workspace:*",
-    "@yyds-lang/formatter": "workspace:*",
     "@yyds-lang/parser": "workspace:*",
     "@yyds-lang/semantic": "workspace:*"
   },

@@ -8,6 +8,8 @@
     "paths": {
       "@yyds-lang/ast": ["./packages/ast/src/index.ts"],
       "@yyds-lang/ast/types": ["./packages/ast/src/types/index.ts"],
+      "@yyds-lang/formatter": ["./packages/formatter/src/index.ts"],
+      "@yyds-lang/formatter/types": ["./packages/formatter/src/types/index.ts"],
       "@yyds-lang/lexer": ["./packages/lexer/src/index.ts"],
       "@yyds-lang/language-service": ["./packages/language-service/src/index.ts"],
       "@yyds-lang/language-service/types": ["./packages/language-service/src/types/index.ts"],

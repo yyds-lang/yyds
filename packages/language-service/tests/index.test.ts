@@ -1,5 +1,12 @@
 import { expect, test } from 'vite-plus/test'
-import { analyzeDocument, getDefinition, getHover, getRenameEdits } from '../src/index.ts'
+import { format } from '@yyds-lang/formatter'
+import {
+  analyzeDocument,
+  formatDocument,
+  getDefinition,
+  getHover,
+  getRenameEdits
+} from '../src/index.ts'
 
 const demo = `
 %C = [A2 C#3 E3 A3]
@@ -40,4 +47,11 @@ test('rename edits include declaration and references', () => {
   }
   const edits = getRenameEdits(analysis, cursor, 'CMaj')
   expect(edits.length).toBeGreaterThanOrEqual(2)
+})
+
+test('formatDocument reuses canonical formatter output', () => {
+  const formattedByService = formatDocument(demo)
+  const formattedByCore = format(demo)
+  expect(formattedByService.text).toBe(formattedByCore.code)
+  expect(formattedByService.diagnostics).toEqual(formattedByCore.diagnostics)
 })

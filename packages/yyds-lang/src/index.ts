@@ -2,6 +2,8 @@ export type * from '@yyds-lang/ast/types'
 export { YYDS_DIAGNOSTIC_CODES, YYDS_DIAGNOSTIC_SEVERITY } from '@yyds-lang/ast'
 export type { YydsDiagnosticCode } from '@yyds-lang/ast'
 export { tokenize } from '@yyds-lang/lexer'
+export { canFormat, format, formatOrThrow } from '@yyds-lang/formatter'
+export type { FormatResult, FormatterOptions } from '@yyds-lang/formatter/types'
 export {
   PARSER_CONTROL_KEYWORDS,
   PARSER_HEADER_KEYWORDS,
@@ -12,11 +14,13 @@ export { analyze } from '@yyds-lang/semantic'
 export type { SemanticModel } from '@yyds-lang/semantic'
 export {
   analyzeDocument,
+  formatDocument,
   getDefinition,
   getHover,
   getRenameEdits
 } from '@yyds-lang/language-service'
 export type {
+  FormatDocumentResult,
   HoverResult,
   RenameEdit,
   TextPosition,

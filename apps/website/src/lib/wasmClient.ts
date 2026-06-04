@@ -71,18 +71,6 @@ export async function initWasm(): Promise<void> {
   }
 }
 
-export async function formatYYDS(source: string): Promise<string> {
-  const response = await request({
-    id: nextId(),
-    type: 'format',
-    payload: { source }
-  })
-  if (response.type !== 'format') {
-    throw new Error('Unexpected format response')
-  }
-  return response.payload.source
-}
-
 export async function renderWav(
   source: string,
   instrument: string

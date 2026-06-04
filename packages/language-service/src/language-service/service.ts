@@ -1,4 +1,5 @@
 import type { Range } from '@yyds-lang/ast/types'
+import { format } from '@yyds-lang/formatter'
 import { parse } from '@yyds-lang/parser'
 import { analyze, type SymbolDefinition, type SymbolReference } from '@yyds-lang/semantic'
 
@@ -25,6 +26,12 @@ export interface YydsDocumentAnalysis {
   diagnostics: ReturnType<typeof analyze>['diagnostics']
 }
 
+export interface FormatDocumentResult {
+  text: string
+  changed: boolean
+  diagnostics: ReturnType<typeof analyze>['diagnostics']
+}
+
 function isInRange(position: TextPosition, range: Range): boolean {
   if (position.line < range.start.line || position.line > range.end.line) {
     return false
@@ -44,6 +51,15 @@ export function analyzeDocument(text: string): YydsDocumentAnalysis {
     definitions: semantic.definitions,
     references: semantic.references,
     diagnostics: semantic.diagnostics
+  }
+}
+
+export function formatDocument(text: string): FormatDocumentResult {
+  const result = format(text)
+  return {
+    text: result.code,
+    changed: result.changed,
+    diagnostics: result.diagnostics
   }
 }
 

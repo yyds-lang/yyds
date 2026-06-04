@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DEFAULT_SOURCE, createYydsEditor } from '../editor/monaco'
-import { formatYYDS, initWasm, renderWav } from '../lib/wasmClient'
+import { initWasm, renderWav } from '../lib/wasmClient'
 
 const instruments = ['piano', 'guitar', 'drums', 'dizi'] as const
 
@@ -52,8 +52,7 @@ async function runFormat(): Promise<void> {
   statusText.value = '格式化中...'
   errorText.value = ''
   try {
-    const formatted = await formatYYDS(editorHandle.getValue())
-    editorHandle.setValue(formatted)
+    const formatted = await editorHandle.formatDocument()
     source.value = formatted
     status.value = 'success'
     statusText.value = '格式化完成'

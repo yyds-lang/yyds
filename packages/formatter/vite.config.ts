@@ -16,13 +16,8 @@ export default defineConfig(
       alias: {
         '@yyds-lang/ast': fromRoot('../ast/src/index.ts'),
         '@yyds-lang/ast/types': fromRoot('../ast/src/types/index.ts'),
-        '@yyds-lang/formatter': fromRoot('../formatter/src/index.ts'),
-        '@yyds-lang/lexer': fromRoot('../lexer/src/index.ts'),
-        '@yyds-lang/language-service': fromRoot('../language-service/src/index.ts'),
-        '@yyds-lang/language-service/types': fromRoot('../language-service/src/types/index.ts'),
         '@yyds-lang/parser': fromRoot('../parser/src/index.ts'),
-        '@yyds-lang/semantic': fromRoot('../semantic/src/index.ts'),
-        '@yyds-lang/textmate': fromRoot('../textmate/src/index.ts')
+        '@yyds-lang/semantic': fromRoot('../semantic/src/index.ts')
       }
     }
   })

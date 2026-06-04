@@ -11,13 +11,6 @@ export type WorkerRequest =
         instrument: string
       }
     }
-  | {
-      id: number
-      type: 'format'
-      payload: {
-        source: string
-      }
-    }
 
 export type WorkerSuccessResponse =
   | {
@@ -47,14 +40,6 @@ export type WorkerSuccessResponse =
           maxPitch: number
           tempo: number
         }
-      }
-    }
-  | {
-      id: number
-      ok: true
-      type: 'format'
-      payload: {
-        source: string
       }
     }
 

@@ -1,5 +1,6 @@
 export {
   analyzeDocument,
+  formatDocument,
   getDefinition,
   getHover,
   getRenameEdits
